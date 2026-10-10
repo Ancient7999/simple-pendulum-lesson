@@ -231,7 +231,7 @@
       cur.style.transform = `translate(${mx}px,${my}px)`;
       cur.classList.remove('hidden');
       const t = e.target.closest ? e.target : null;
-      const grab = t && t.closest('.bob-g, .slider-g, .handle');
+      const grab = t && t.closest('.bob-g, .slider-g, .knob-g, .handle');
       const hot = t && t.closest('button:not(:disabled), a, select, label, input[type=range], input[type=checkbox], .live');
       cur.classList.toggle('grab', !!grab);
       cur.classList.toggle('hot', !!hot && !grab);
@@ -831,17 +831,33 @@
     txt(scale, P.x + 6, P.y + 100 * SC + 22, 'cm', { 'font-size': 11, fill: '#3c4a4e', 'font-family': 'JetBrains Mono, monospace' });
     // boss head and split cork, in front of the rod, holding the thread
     el('rect', { x: P.x - 20, y: P.y - 34, width: 40, height: 20, rx: 4, fill: '#33413f' }, stat);
-    el('circle', { cx: P.x + 26, cy: P.y - 24, r: 5, fill: '#4a5a5e', stroke: '#26332f' }, stat);
     el('path', { d: `M${P.x - 8} ${P.y - 15} h16 l-2 13 h-12 z`, fill: '#c9a26a', stroke: '#8d6a37', 'stroke-width': 1 }, stat);
     el('line', { x1: P.x, y1: P.y - 14, x2: P.x, y2: P.y - 2, stroke: '#8d6a37', 'stroke-width': 1 }, stat);
+
+    // reel thread: from the top of the boss head over to the knob's spool; its dashes slide as the thread is wound
+    const KX = P.x + 44, KY = P.y - 24, KR = 13;
+    el('path', { d: `M${P.x} ${P.y - 34} V${P.y - 44} Q${P.x} ${P.y - 50} ${P.x + 7} ${P.y - 50} H${KX - 7} Q${KX} ${P.y - 50} ${KX} ${KY - 4}`, fill: 'none', stroke: '#1d2a2e', 'stroke-width': 1.5 }, stat);
+    const reel = el('path', { d: `M${P.x} ${P.y - 34} V${P.y - 44} Q${P.x} ${P.y - 50} ${P.x + 7} ${P.y - 50} H${KX - 7} Q${KX} ${P.y - 50} ${KX} ${KY - 4}`, fill: 'none', stroke: '#e8dcc0', 'stroke-width': 1.5, 'stroke-dasharray': '2 6' }, stat);
+    el('rect', { x: P.x + 18, y: KY - 4, width: KX - P.x - 18, height: 8, rx: 2, fill: '#5b6b70' }, stat);   // axle from the boss head
+    // the rotary knob: knurled rim, grip line, focus ring
+    const knob = el('g', { class: 'knob-g', tabindex: 0, role: 'slider', 'aria-label': 'Length knob: turn clockwise to lower the bob, anticlockwise to raise it', 'aria-valuemin': 10, 'aria-valuemax': 100 }, svg);
+    el('circle', { cx: KX, cy: KY, r: KR + 9, fill: 'transparent' }, knob);
+    el('circle', { class: 'knob-focus', cx: KX, cy: KY, r: KR + 5, fill: 'none', stroke: '#b8873a', 'stroke-width': 2 }, knob);
+    el('circle', { cx: KX + 1.5, cy: KY + 2, r: KR, fill: 'rgba(20,35,40,.25)' }, knob);
+    const knobRot = el('g', null, knob);
+    el('circle', { cx: KX, cy: KY, r: KR, fill: '#2f3d42', stroke: '#1b262a', 'stroke-width': 1 }, knobRot);
+    for (let i = 0; i < 16; i++) { const a = i * Math.PI / 8; el('line', { x1: KX + (KR - 3.5) * Math.cos(a), y1: KY + (KR - 3.5) * Math.sin(a), x2: KX + KR * Math.cos(a), y2: KY + KR * Math.sin(a), stroke: '#55666c', 'stroke-width': 1.4 }, knobRot); }
+    el('circle', { cx: KX, cy: KY, r: KR - 4, fill: '#3e4e54' }, knobRot);
+    el('line', { x1: KX, y1: KY - 2, x2: KX, y2: KY - KR + 1.5, stroke: '#e9c98a', 'stroke-width': 2.4, 'stroke-linecap': 'round' }, knobRot);
+    el('circle', { cx: KX, cy: KY, r: 2, fill: '#8a9a9e' }, knobRot);
 
     // L indicator: a notch on the rod's edge with its readout outside the rod, above the arc
     const sliderG = el('g', { class: 'slider-g' }, svg);
     el('rect', { x: P.x + RH - 4, y: -56, width: 92, height: 64, fill: 'transparent' }, sliderG);
     el('path', { d: `M${P.x + RH} 0 l10 -6 v12 z`, fill: '#b8873a', stroke: '#7d571d', 'stroke-width': 1 }, sliderG);
     el('line', { x1: P.x + RH + 10, y1: 0, x2: P.x + RH + 18, y2: -30, stroke: '#b8873a', 'stroke-width': 1.4 }, sliderG);
-    el('rect', { x: P.x + RH + 14, y: -52, width: 66, height: 22, rx: 6, fill: '#b8873a', stroke: '#7d571d' }, sliderG);
-    const sliderTxt = txt(sliderG, P.x + RH + 47, -36.5, 'L = 20', { 'font-size': 12.5, 'font-weight': 700, fill: '#fff', 'text-anchor': 'middle', 'font-family': 'JetBrains Mono, monospace' });
+    el('rect', { x: P.x + RH + 14, y: -52, width: 78, height: 22, rx: 6, fill: '#b8873a', stroke: '#7d571d' }, sliderG);
+    const sliderTxt = txt(sliderG, P.x + RH + 53, -36.5, 'L = 20', { 'font-size': 12.5, 'font-weight': 700, fill: '#fff', 'text-anchor': 'middle', 'font-family': 'JetBrains Mono, monospace' });
 
     const dyn = el('g', null, svg);
     const meanLine = el('line', { x1: P.x, x2: P.x, y2: BASE_Y - 6, stroke: '#7d8a8e', 'stroke-opacity': .55, 'stroke-dasharray': '4 6' }, dyn);
@@ -893,7 +909,10 @@
       bobShadow.setAttribute('cx', bx + 7); bobShadow.setAttribute('cy', by + 9);
       meanLine.setAttribute('y1', yr + 16);
       markBar.setAttribute('y', yr + 22); markLab.setAttribute('y', yr + 50);
-      sliderG.setAttribute('transform', `translate(0 ${yr})`); sliderTxt.textContent = 'L = ' + st.L;
+      sliderG.setAttribute('transform', `translate(0 ${yr})`); sliderTxt.textContent = 'L = ' + fmtL(st.L);
+      knobRot.setAttribute('transform', `rotate(${(st.L - 10) * 36} ${KX} ${KY})`);
+      reel.setAttribute('stroke-dashoffset', (-st.L * SC).toFixed(1));
+      knob.setAttribute('aria-valuenow', st.L); knob.setAttribute('aria-valuetext', fmtL(st.L) + ' cm');
       const deg = st.th * 180 / Math.PI;
       if (st.drag) {
         angLab.textContent = `θ = ${Math.abs(deg).toFixed(0)}°`;
@@ -914,19 +933,59 @@
     /* ---------- length controls ---------- */
     const lenIn = $('p-len'), lenO = $('p-len-o'), quick = Array.from(document.querySelectorAll('#p-quick button'));
     function setL(L, fromUser) {
-      L = clamp(Math.round(L), 10, 100);
+      L = clamp(Math.round(L * 10) / 10, 10, 100);
       const changed = L !== st.L;
-      st.L = L; lenIn.value = L; lenO.textContent = L + ' cm'; $('rec-l').textContent = L;
-      quick.forEach(b => b.classList.toggle('on', +b.dataset.l === L));
       if (changed && fromUser) {
         const wasSwinging = st.swinging;
-        st.th = 0; st.om = 0; st.swinging = false;
-        if (sw.running || sw.acc > 0) swReset(true);
-        say(rigMsg, 'rig-msg', '', `L = ${L} cm, from the point of suspension to the centre of the bob.` + (wasSwinging ? ' The bob was stopped to change the length.' : ' Pull the bob aside and let go.'));
+        grabBob();                     // a length change stops the swing; a running count is interrupted, a frozen reading kept
+        if (st.drag === 'bob') st.drag = null;
+        st.th = 0;
+        say(rigMsg, 'rig-msg', '', `L = ${fmtL(L)} cm, from the point of suspension to the centre of the bob.` + (wasSwinging ? ' The swing was stopped to change the length.' : ' Pull the bob aside and let go.'));
       }
+      st.L = L; lenIn.value = L; lenO.textContent = fmtL(L) + ' cm';
+      quick.forEach(b => { const on = +b.dataset.l === L; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
       drawRig();
     }
+    /* knob: drag (circular outside the knob, vertical near its centre), wheel, arrow keys */
+    let kAcc = 0, kLast = null;
+    const kStep = e => (e && e.shiftKey ? .1 : .5);
+    function knobTurn(dL, step) {      // accumulate fine motion, move L in whole notches
+      kAcc += dL;
+      const n = Math.trunc(kAcc / step);
+      if (n) { kAcc -= n * step; setL(Math.round((st.L + n * step) / step) * step, true); }
+    }
+    knob.addEventListener('pointerdown', e => {
+      e.preventDefault(); knob.focus({ preventScroll: true });
+      st.drag = 'knob'; kAcc = 0;
+      const p = svgPoint(svg, e); kLast = { x: p.x, y: p.y, a: Math.atan2(p.y - KY, p.x - KX) };
+    });
+    window.addEventListener('pointermove', e => {
+      if (st.drag !== 'knob' || !kLast) return;
+      const p = svgPoint(svg, e), a = Math.atan2(p.y - KY, p.x - KX), dist = Math.hypot(p.x - KX, p.y - KY);
+      let dL;
+      if (dist > KR + 3) { let da = (a - kLast.a) * 180 / Math.PI; if (da > 180) da -= 360; if (da < -180) da += 360; dL = da / 36; }
+      else dL = (p.y - kLast.y) * .1;
+      kLast = { x: p.x, y: p.y, a };
+      knobTurn(dL, kStep(e));
+    });
+    window.addEventListener('pointerup', () => { if (st.drag === 'knob') { st.drag = null; kLast = null; } });
+    knob.addEventListener('wheel', e => {
+      e.preventDefault();
+      const d = e.deltaY || e.deltaX; if (!d) return;
+      const step = kStep(e); setL(Math.round((st.L + Math.sign(d) * step) / step) * step, true);
+    }, { passive: false });
+    knob.addEventListener('keydown', e => {
+      const step = kStep(e), k = e.key;
+      let L = null;
+      if (k === 'ArrowUp' || k === 'ArrowRight') L = st.L + step;
+      else if (k === 'ArrowDown' || k === 'ArrowLeft') L = st.L - step;
+      else if (k === 'PageUp') L = st.L + 5; else if (k === 'PageDown') L = st.L - 5;
+      else if (k === 'Home') L = 10; else if (k === 'End') L = 100;
+      if (L == null) return;
+      e.preventDefault(); e.stopPropagation(); setL(L, true);
+    });
     lenIn.addEventListener('input', () => setL(+lenIn.value, true));
+    function fmtL(L) { return String(+(+L).toFixed(1)); }
     quick.forEach(b => b.addEventListener('click', () => setL(+b.dataset.l, true)));
     $('p-slow').addEventListener('change', e => {
       st.slow = e.target.checked;
@@ -976,11 +1035,11 @@
     window.addEventListener('pointerup', () => { if (st.drag === 'bob') releaseBob(); else if (st.drag === 'slider') st.drag = null; });
 
     /* ---------- stopwatch + oscillation counter ---------- */
-    const swVal = $('sw-val'), swBox = $('stopwatch'), ctVal = $('ct-val'), ctBox = $('counter'), btnStart = $('sw-start'), btnAuto = $('sw-auto');
+    const recL = $('rec-l'), swVal = $('sw-val'), swBox = $('stopwatch'), ctVal = $('ct-val'), ctBox = $('counter'), btnStart = $('sw-start'), btnAuto = $('sw-auto');
     const dots = $('ct-dots'); for (let i = 0; i < 10; i++) dots.appendChild(document.createElement('i'));
     function swTime() { return sw.running ? sw.acc + (st.simT - sw.start) : sw.acc; }
     function showCount() { ctVal.textContent = sw.count; Array.from(dots.children).forEach((d, i) => d.classList.toggle('on', i < sw.count)); }
-    function swShow() { swVal.textContent = swTime().toFixed(2); swBox.classList.toggle('running', sw.running); btnStart.firstChild.textContent = sw.running ? 'Stop ' : 'Start '; }
+    function swShow() { const rl = fmtL(sw.frozen || sw.running ? sw.L : st.L); if (recL.textContent !== rl) recL.textContent = rl; swVal.textContent = swTime().toFixed(2); swBox.classList.toggle('running', sw.running); btnStart.firstChild.textContent = sw.running ? 'Stop ' : 'Start '; }
     function swReset(silent) {
       sw.running = false; sw.autoRun = false; sw.acc = 0; sw.count = 0; sw.frozen = false; showCount(); swShow();
       if (!silent) say(swMsg, 'sw-msg', '', 'Stopwatch reset to 0.00 s.');
@@ -1118,11 +1177,11 @@
       let i = rows.findIndex(r => num(r, 'L') === L);
       if (i < 0) i = rows.findIndex(r => !String(r.L).trim() && !String(r.T10).trim());
       if (i < 0) { rows.push({ L: '', T10: '', T: '', T2: '' }); i = rows.length - 1; }
-      rows[i].L = String(L); rows[i].T10 = T10.toFixed(2); fillRow(rows[i]);
+      rows[i].L = fmtL(L); rows[i].T10 = T10.toFixed(2); fillRow(rows[i]);
       rows.sort((a, b) => (num(a, 'L') || 1e9) - (num(b, 'L') || 1e9));
       const fi = rows.findIndex(r => num(r, 'L') === L);
       sel = []; renderTable(fi); renderGraph();
-      say(swMsg, 'sw-msg', 'ok', `Recorded: L = ${L} cm, T₁₀ = ${T10.toFixed(2)} s, T = ${rows[fi].T} s, T² = ${rows[fi].T2} s².`);
+      say(swMsg, 'sw-msg', 'ok', `Recorded: L = ${fmtL(L)} cm, T₁₀ = ${T10.toFixed(2)} s, T = ${rows[fi].T} s, T² = ${rows[fi].T2} s².`);
     });
 
     /* ---------- graph ---------- */
