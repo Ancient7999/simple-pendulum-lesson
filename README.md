@@ -14,7 +14,7 @@ https://sonicunligmated.github.io/simple-pendulum-lesson/
 4. Formula & results (worked example with readings calculated for ideal small-angle swings, g = 980 cm/s²: S ≈ 0.04027 s²/cm; cm/s² to m/s²)
 5. Graph (hover to highlight readings; slope from the outer points, the inner points, or least squares; optional g = 980 reference line)
 6. MCQs (20 questions, choices reshuffled on load and on reset)
-7. Practical (front view with the metre rule beside the string, draggable length and bob, stopwatch with oscillation counter, slow motion, Auto-count 10 toggle, table that starts empty, pick-two-points or drag-a-line graph, Calculation with Check and nudges, guided calculation, automated tutorial)
+7. Practical (front view with the pendulum hanging in front of the stand rod, which carries the cm scale, draggable length and bob, stopwatch with oscillation counter, slow motion, Auto-count 10 toggle, table that starts empty, pick-two-points or drag-a-line graph, Calculation with Check and nudges, guided calculation, automated tutorial)
 
 ## Practical model
 

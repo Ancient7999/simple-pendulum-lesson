@@ -797,70 +797,92 @@
   })();
 
   /* =====================================================================
-     12. PRACTICAL — front (coronal) view, metre rule beside the string
+     12. PRACTICAL — front view, cm scale on the stand rod behind the string
      ===================================================================== */
   (function practical() {
     const st = { L: 20, slow: false, th: 0, om: 0, simT: 0, drag: null, swinging: false, speed: 1 };
 
-    /* ---------- rig drawing ---------- */
-    const svg = $('rig'); bobDefs(svg, 'rg');
+    /* ---------- rig drawing: looking straight at the stand, rod behind the string ---------- */
+    const svg = $('rig'); const defs = bobDefs(svg, 'rg');
     const SC = 5.6;
+    const P = { x: 260, y: 66 };                       // suspension point (split cork, in front of the rod)
+    const RH = 30;                                     // half-width of the stand rod carrying the cm scale
+    const ROD_TOP = P.y - 40, BASE_Y = 676;
+    let gr = el('linearGradient', { id: 'rg-steel', x1: 0, x2: 1, y1: 0, y2: 0 }, defs);
+    [['0', '#a9b4b6'], ['.18', '#cfd6d7'], ['.5', '#dde3e3'], ['.85', '#c3cbcc'], ['1', '#959fa2']].forEach(s => el('stop', { offset: s[0], 'stop-color': s[1] }, gr));
+    const blur = el('filter', { id: 'rg-soft', x: '-40%', y: '-5%', width: '180%', height: '110%' }, defs);
+    el('feGaussianBlur', { stdDeviation: 5 }, blur);
     const stat = el('g', null, svg);
-    const P = drawStand(stat, 'rg', { rodX: 70, baseY: 690, armY: 50, pivotX: 250 });
-    const RL = P.x + 6, RW = 40;            // metre rule hangs just beside the string, in the same plane
-    const rule = el('g', null, stat);
-    el('rect', { x: RL, y: P.y - 6, width: RW, height: 100 * SC + 20, rx: 3, fill: 'url(#rg-wood)', stroke: '#b89a5c' }, rule);
-    el('rect', { x: RL + 14, y: P.y - 14, width: 12, height: 10, rx: 2, fill: '#8a9a96' }, rule); // hanger
+    // base (further back, so slightly darker) and its shadow
+    el('ellipse', { cx: P.x + 8, cy: BASE_Y + 26, rx: 118, ry: 9, fill: 'rgba(20,35,40,.12)', filter: 'url(#rg-soft)' }, stat);
+    el('rect', { x: P.x - 104, y: BASE_Y, width: 208, height: 22, rx: 5, fill: '#34424a' }, stat);
+    el('rect', { x: P.x - 104, y: BASE_Y, width: 208, height: 5, rx: 2, fill: '#4f5f66' }, stat);
+    // soft shadow of the rod on the wall behind it
+    el('rect', { x: P.x - RH + 9, y: ROD_TOP + 8, width: RH * 2, height: BASE_Y - ROD_TOP - 4, rx: 5, fill: 'rgba(20,35,40,.16)', filter: 'url(#rg-soft)' }, stat);
+    // the rod itself, with the scale engraved on it (0 at the suspension point)
+    el('rect', { x: P.x - RH, y: ROD_TOP, width: RH * 2, height: BASE_Y - ROD_TOP, rx: 4, fill: 'url(#rg-steel)', stroke: '#8a9598', 'stroke-width': 1 }, stat);
+    el('rect', { x: P.x - RH - 3, y: ROD_TOP - 6, width: RH * 2 + 6, height: 8, rx: 3, fill: '#7d8a8e' }, stat);
+    const scale = el('g', null, stat);
     for (let c = 0; c <= 100; c++) {
-      const y = P.y + c * SC, len = c % 10 === 0 ? 15 : c % 5 === 0 ? 10 : 5;
-      el('line', { x1: RL, y1: y, x2: RL + len, y2: y, stroke: '#5a4a2a', 'stroke-width': c % 10 ? .8 : 1.3 }, rule);
-      if (c % 10 === 0) txt(rule, RL + RW - 4, y + 4.5, String(c), { 'font-size': 12.5, fill: '#5a4a2a', 'text-anchor': 'end', 'font-family': 'JetBrains Mono, monospace' });
+      const y = P.y + c * SC, len = c % 10 === 0 ? 13 : c % 5 === 0 ? 9 : 5;
+      el('line', { x1: P.x - RH, y1: y, x2: P.x - RH + len, y2: y, stroke: '#26332f', 'stroke-width': c % 10 ? .8 : 1.3 }, scale);
+      if (c % 10 === 0) txt(scale, P.x + 5, y + 4.5, String(c), { 'font-size': 12, fill: '#1e2b2f', 'font-family': 'JetBrains Mono, monospace' });
     }
-    txt(rule, RL + RW / 2, P.y + 100 * SC + 30, 'cm', { 'font-size': 12, fill: '#5a4a2a', 'text-anchor': 'middle' });
+    txt(scale, P.x + 6, P.y + 100 * SC + 22, 'cm', { 'font-size': 11, fill: '#3c4a4e', 'font-family': 'JetBrains Mono, monospace' });
+    // boss head and split cork, in front of the rod, holding the thread
+    el('rect', { x: P.x - 20, y: P.y - 34, width: 40, height: 20, rx: 4, fill: '#33413f' }, stat);
+    el('circle', { cx: P.x + 26, cy: P.y - 24, r: 5, fill: '#4a5a5e', stroke: '#26332f' }, stat);
+    el('path', { d: `M${P.x - 8} ${P.y - 15} h16 l-2 13 h-12 z`, fill: '#c9a26a', stroke: '#8d6a37', 'stroke-width': 1 }, stat);
+    el('line', { x1: P.x, y1: P.y - 14, x2: P.x, y2: P.y - 2, stroke: '#8d6a37', 'stroke-width': 1 }, stat);
+
+    // L indicator: a notch on the rod's edge with its readout outside the rod, above the arc
+    const sliderG = el('g', { class: 'slider-g' }, svg);
+    el('rect', { x: P.x + RH - 4, y: -56, width: 92, height: 64, fill: 'transparent' }, sliderG);
+    el('path', { d: `M${P.x + RH} 0 l10 -6 v12 z`, fill: '#b8873a', stroke: '#7d571d', 'stroke-width': 1 }, sliderG);
+    el('line', { x1: P.x + RH + 10, y1: 0, x2: P.x + RH + 18, y2: -30, stroke: '#b8873a', 'stroke-width': 1.4 }, sliderG);
+    el('rect', { x: P.x + RH + 14, y: -52, width: 66, height: 22, rx: 6, fill: '#b8873a', stroke: '#7d571d' }, sliderG);
+    const sliderTxt = txt(sliderG, P.x + RH + 47, -36.5, 'L = 20', { 'font-size': 12.5, 'font-weight': 700, fill: '#fff', 'text-anchor': 'middle', 'font-family': 'JetBrains Mono, monospace' });
+
     const dyn = el('g', null, svg);
-    const meanLine = el('line', { x1: P.x, x2: P.x, y2: 676, stroke: '#a9b8b3', 'stroke-dasharray': '4 6' }, dyn);
+    const meanLine = el('line', { x1: P.x, x2: P.x, y2: BASE_Y - 6, stroke: '#7d8a8e', 'stroke-opacity': .55, 'stroke-dasharray': '4 6' }, dyn);
     const arcG = el('g', null, dyn); let arcL = -1;
     const maxAng = () => Math.min(35 * Math.PI / 180, Math.asin(Math.min(1, (P.x - 22) / (st.L * SC))));
     function drawArc() {
       if (arcL === st.L) return; arcL = st.L; arcG.innerHTML = '';
-      const R = st.L * SC, pt = (d, r) => [P.x + r * Math.sin(d * Math.PI / 180), P.y + r * Math.cos(d * Math.PI / 180)];
+      const R = st.L * SC, rad = d => d * Math.PI / 180, pt = (d, r) => [P.x + r * Math.sin(rad(d)), P.y + r * Math.cos(rad(d))];
       const arc = (d1, d2, r) => { const [x1, y1] = pt(d1, r), [x2, y2] = pt(d2, r); return `M${x1} ${y1} A${r} ${r} 0 0 0 ${x2} ${y2}`; };
-      el('path', { d: arc(-10, 10, R), fill: 'none', stroke: '#2b6a57', 'stroke-width': 2.4, 'stroke-opacity': .5 }, arcG);
-      el('path', { d: arc(-35, -10, R), fill: 'none', stroke: '#b24a37', 'stroke-width': 1.6, 'stroke-opacity': .35, 'stroke-dasharray': '4 4' }, arcG);
-      el('path', { d: arc(10, 35, R), fill: 'none', stroke: '#b24a37', 'stroke-width': 1.6, 'stroke-opacity': .35, 'stroke-dasharray': '4 4' }, arcG);
+      const a0 = Math.asin(Math.min(1, (RH + 3) / R)) * 180 / Math.PI;   // the arc stops at the rod so the scale stays clear
+      const seg = (d1, d2, attrs) => { if (d2 - d1 > .5) el('path', Object.assign({ d: arc(d1, d2, R), fill: 'none' }, attrs), arcG); };
+      const green = { stroke: '#2b6a57', 'stroke-width': 2.4, 'stroke-opacity': .55 }, red = { stroke: '#b24a37', 'stroke-width': 1.6, 'stroke-opacity': .4, 'stroke-dasharray': '4 4' };
+      seg(-35, -Math.max(10, a0), red); seg(-10, -a0, green); seg(a0, 10, green); seg(Math.max(10, a0), 35, red);
+      const clearOfRod = x => Math.abs(x - P.x) > RH + 4;
       for (let d = -30; d <= 30; d += 5) {
         if (!d) continue;
         const [x1, y1] = pt(d, R + 6), [x2, y2] = pt(d, R + (d % 10 ? 12 : 16));
-        if (d > 0 && x2 > RL - 2) continue;      // right side: nothing that reaches the rule or the L tab
-        el('line', { x1, y1, x2, y2, stroke: Math.abs(d) > 10 ? '#b24a37' : '#2b6a57', 'stroke-width': 1.2, 'stroke-opacity': .7 }, arcG);
+        if (!clearOfRod(x1) || !clearOfRod(x2)) continue;
+        el('line', { x1, y1, x2, y2, stroke: Math.abs(d) > 10 ? '#b24a37' : '#2b6a57', 'stroke-width': 1.2, 'stroke-opacity': .75 }, arcG);
       }
       [10, 20, 30].forEach(d => {
         if (d === 20 && R < 150) return;
-        [-d].forEach(dd => {                          // labels on the free (left) side only
+        [-d, d].forEach(dd => {
           const [x, y] = pt(dd, R + 30);
-          if (x < 10) return;
+          if (Math.abs(x - P.x) < RH + 14 || x < 10 || x > 510) return;
           txt(arcG, x, y + 4, d + '°', { 'font-size': 12, fill: d > 10 ? '#b24a37' : '#2b6a57', 'text-anchor': 'middle' });
         });
       });
     }
     const mark = el('g', null, dyn);
-    const markBar = el('rect', { width: 4, height: 16, x: P.x - 2, fill: '#b8873a', rx: 1 }, mark);
-    const markLab = txt(mark, P.x - 6, 0, 'centre mark', { 'font-size': 11, fill: '#8d6424', 'text-anchor': 'end' });
-    const str = el('line', { x1: P.x, y1: P.y, stroke: '#2b3a3e', 'stroke-width': 1.6 }, dyn);
+    const markBar = el('rect', { width: 3, height: 16, x: P.x - 1.5, fill: '#b8873a', rx: 1 }, mark);
+    const markLab = txt(mark, P.x - RH - 8, 0, 'centre mark', { 'font-size': 11, fill: '#8d6424', 'text-anchor': 'end' });
+    const str = el('line', { x1: P.x, y1: P.y, stroke: '#1d2a2e', 'stroke-width': 1.7 }, dyn);
     const bobG = el('g', { class: 'bob-g' }, dyn);
     const strHit = el('line', { x1: P.x, y1: P.y + 12, stroke: 'transparent', 'stroke-width': 22, 'stroke-linecap': 'round' }, bobG);
     const bobHit = el('circle', { r: 30, fill: 'transparent' }, bobG);
-    const bobShadow = el('ellipse', { rx: 13, ry: 4, fill: 'rgba(0,0,0,.08)' }, dyn);
+    const bobShadow = el('ellipse', { rx: 14, ry: 5, fill: 'rgba(20,35,40,.14)' }, dyn);
     dyn.insertBefore(bobShadow, str);
     const bob = el('circle', { r: 14, fill: 'url(#rg-bob)', stroke: '#7d571d' }, bobG);
     const angLab = txt(dyn, 0, 0, '', { 'font-size': 18, 'font-weight': 700, 'text-anchor': 'middle', 'font-family': 'JetBrains Mono, monospace' });
-    const sliderG = el('g', { class: 'slider-g' }, svg);
-    el('rect', { x: RL + RW - 6, y: -16, width: 70, height: 32, fill: 'transparent' }, sliderG);
-    el('path', { d: `M${RL + RW - 3} 0 l12 -11 h38 a5 5 0 0 1 5 5 v12 a5 5 0 0 1 -5 5 h-38 z`, fill: '#b8873a', stroke: '#7d571d' }, sliderG);
-    const sliderTxt = txt(sliderG, RL + RW + 29, 5, '20', { 'font-size': 13, 'font-weight': 700, fill: '#fff', 'text-anchor': 'middle', 'font-family': 'JetBrains Mono, monospace' });
-    txt(sliderG, RL + RW + 62, 5, 'L', { 'font-size': 18, 'font-style': 'italic', fill: '#2b6a57', 'font-family': 'Instrument Serif, serif' });
 
-    svg.insertBefore(sliderG, dyn);          // the L tab sits behind the swinging bob
     function bobPos() { const Lp = st.L * SC; return [P.x + Lp * Math.sin(st.th), P.y + Lp * Math.cos(st.th)]; }
     function drawRig() {
       drawArc();
@@ -868,14 +890,14 @@
       str.setAttribute('x2', bx); str.setAttribute('y2', by);
       strHit.setAttribute('x2', bx); strHit.setAttribute('y2', by);
       bobHit.setAttribute('cx', bx); bobHit.setAttribute('cy', by); bob.setAttribute('cx', bx); bob.setAttribute('cy', by);
-      bobShadow.setAttribute('cx', bx + 3); bobShadow.setAttribute('cy', by + 15);
+      bobShadow.setAttribute('cx', bx + 7); bobShadow.setAttribute('cy', by + 9);
       meanLine.setAttribute('y1', yr + 16);
-      markBar.setAttribute('y', yr + 22); markLab.setAttribute('y', yr + 54);
-      sliderG.setAttribute('transform', `translate(0 ${yr})`); sliderTxt.textContent = st.L;
+      markBar.setAttribute('y', yr + 22); markLab.setAttribute('y', yr + 50);
+      sliderG.setAttribute('transform', `translate(0 ${yr})`); sliderTxt.textContent = 'L = ' + st.L;
       const deg = st.th * 180 / Math.PI;
       if (st.drag) {
         angLab.textContent = `θ = ${Math.abs(deg).toFixed(0)}°`;
-        angLab.setAttribute('x', bx + (deg > 0 ? 40 : -40)); angLab.setAttribute('y', by - 20);
+        angLab.setAttribute('x', bx + (deg > 0 ? 22 : -22)); angLab.setAttribute('y', by - 18); angLab.setAttribute('text-anchor', deg > 0 ? 'start' : 'end');
         angLab.setAttribute('fill', Math.abs(deg) > 10.5 ? '#b24a37' : '#2b6a57');
       } else angLab.textContent = '';
     }
@@ -937,7 +959,8 @@
       drawRig();
     }
     bobG.addEventListener('pointerdown', e => { e.preventDefault(); grabBob(); st.drag = 'bob'; });
-    sliderG.addEventListener('pointerdown', e => { e.preventDefault(); st.drag = 'slider'; });
+    let slideOff = 0;
+    sliderG.addEventListener('pointerdown', e => { e.preventDefault(); st.drag = 'slider'; slideOff = svgPoint(svg, e).y - (P.y + st.L * SC); });
     window.addEventListener('pointermove', e => {
       if (st.drag !== 'bob' && st.drag !== 'slider') return;
       const p = svgPoint(svg, e);
@@ -948,7 +971,7 @@
         if (d > 10.5) say(rigMsg, 'rig-msg', 'warn', `θ = ${d.toFixed(0)}°: too large. Keep the angle under 10°.`);
         else say(rigMsg, 'rig-msg', '', `θ = ${d.toFixed(0)}°. Let go to release.`);
         drawRig();
-      } else setL((p.y - P.y) / SC, true);
+      } else setL((p.y - slideOff - P.y) / SC, true);
     });
     window.addEventListener('pointerup', () => { if (st.drag === 'bob') releaseBob(); else if (st.drag === 'slider') st.drag = null; });
 
@@ -1311,7 +1334,7 @@
         for (const L of [20, 40, 60, 80]) {
           await scrollTo(document.querySelector('.prac'));
           if (L === 20) {
-            step('Set the length', 'Slide the brass tab on the metre rule to L = 20 cm. L runs from the point of suspension to the centre of the bob.', 'L = 20 cm');
+            step('Set the length', 'Slide the brass L marker down the scale on the stand rod to 20 cm. L runs from the point of suspension (0 on the rod) to the centre of the bob.', 'L = 20 cm');
             hi(rigCol);
             for (let l = st.L; l >= 20; l--) { setL(l, false); await wait(70); }
           } else {
