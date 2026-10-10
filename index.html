@@ -39,7 +39,7 @@
     <!-- ============ AIM & OUTCOMES ============ -->
     <section class="view" id="view-aim" data-title="Aim &amp; outcomes">
       <div class="sheet">
-        <p class="disclaimer">This lesson is an AI-assisted introduction, not scientific-grade material. Use it to build a working picture before the lecture and the lab session, and follow your lab manual and instructor where they differ.</p>
+        <p class="disclaimer">This lesson is an AI-assisted introduction, not scientific-grade material. It is meant to build a working picture before the lecture and the lab session; the lab manual and the instructor take priority where they differ.</p>
         <p class="eyebrow">Physics practical · Simple pendulum</p>
         <h1 class="page-h">Acceleration due to gravity with a simple pendulum</h1>
         <div class="aim-grid">
@@ -49,7 +49,7 @@
               <p class="aim-text">To determine the acceleration due to gravity, <i>g</i>, using a simple pendulum.</p>
             </div>
             <h2 class="sub-h">Learning outcomes</h2>
-            <p class="lede">By the end of this session you should be able to:</p>
+            <p class="lede">By the end of this session, students should be able to:</p>
             <ul class="outcomes">
               <li>Determine the acceleration due to gravity using a simple pendulum.</li>
               <li>Record the quantity that depends on gravity: the period of oscillation, and how it changes with length.</li>
@@ -103,6 +103,11 @@
           <li>The period of SHM is T = 2π / ω, so<span class="eq-line big">T = 2π √(L / g)</span></li>
           <li>Square both sides:<span class="eq-line big">T² = (4π² / g) L</span></li>
         </ol>
+
+        <div class="angle-note">
+          <div class="an-k">Small angles only</div>
+          <p>T = 2π√(L/g) holds only for small angles, under about 10°. At larger angles the true period is longer than the formula predicts: at 30° it is about 1.7% longer, and a g calculated from such a period comes out about 3.5% too low.</p>
+        </div>
 
         <div class="line-card">
           <div class="lc-eq"><span class="lc-y">T²</span> = <span class="lc-m">(4π² / g)</span> · <span class="lc-x">L</span></div>
@@ -164,11 +169,11 @@
         <aside class="tips">
           <div class="tips-label">Good practice</div>
           <ul>
-            <li><strong>Small angle.</strong> T = 2π√(L/g) assumes sin θ ≈ θ. Above about 10° the true period gets noticeably longer.</li>
+            <li><strong>Small angle.</strong> T = 2π√(L/g) holds only for small angles, under about 10°. At 30° the period is about 1.7% longer, which shifts the value of g.</li>
             <li><strong>Measure to the centre of the bob.</strong> L = string length (from the clamp) + radius of the bob.</li>
             <li><strong>Time at the mean position.</strong> The bob moves fastest there, so the moment it passes is sharpest. Start the watch as it passes and count "zero", then count each return in the same direction.</li>
             <li><strong>Swing in one plane.</strong> Release gently without pushing, so the bob does not trace an ellipse.</li>
-            <li><strong>Time many oscillations.</strong> Your reaction error (about 0.2 s) is shared over all of them. Over 10 oscillations it is 0.02 s per period; over 20, only 0.01 s.</li>
+            <li><strong>Time many oscillations.</strong> The reaction error (about 0.2 s) is shared over all of them. Over 10 oscillations it is 0.02 s per period; over 20, only 0.01 s.</li>
           </ul>
         </aside>
         <div class="page-end"><button type="button" class="btn-next" data-next>Next →</button></div>
@@ -191,16 +196,16 @@
           </dl>
         </div>
 
-        <h2 class="sub-h">Observation table</h2>
-        <p class="lede">The worked example uses a real set of readings from this lab.</p>
+        <h2 class="sub-h">Worked example</h2>
+        <p class="lede">Example readings, calculated for ideal small-angle swings with g = 980 cm/s² and rounded as a stopwatch would show them.</p>
         <div class="table-wrap">
           <table class="obs" id="res-table">
             <thead><tr><th>L<span class="u">cm</span></th><th>T<sub>10</sub><span class="u">s</span></th><th>T = T<sub>10</sub> ÷ 10<span class="u">s</span></th><th>T²<span class="u">s²</span></th></tr></thead>
             <tbody>
-              <tr><td>20</td><td>10</td><td>1</td><td>1</td></tr>
-              <tr><td>40</td><td>14</td><td>1.4</td><td>1.96</td></tr>
-              <tr><td>60</td><td>16</td><td>1.6</td><td>2.56</td></tr>
-              <tr><td>80</td><td>18</td><td>1.8</td><td>3.24</td></tr>
+              <tr><td>20</td><td>8.98</td><td>0.898</td><td>0.806</td></tr>
+              <tr><td>40</td><td>12.69</td><td>1.269</td><td>1.610</td></tr>
+              <tr><td>60</td><td>15.55</td><td>1.555</td><td>2.418</td></tr>
+              <tr><td>80</td><td>17.95</td><td>1.795</td><td>3.222</td></tr>
             </tbody>
           </table>
         </div>
@@ -208,16 +213,16 @@
         <h2 class="sub-h">Calculation</h2>
         <div class="calc">
           <div class="calc-step"><span class="cs-n">1</span><div><strong>Period from 10 oscillations</strong>
-            <span class="eq-line">T = T<sub>10</sub> ÷ 10, e.g. 14 ÷ 10 = <b>1.4 s</b></span></div></div>
+            <span class="eq-line">T = T<sub>10</sub> ÷ 10, e.g. 12.69 ÷ 10 = <b>1.269 s</b></span></div></div>
           <div class="calc-step"><span class="cs-n">2</span><div><strong>Square it</strong>
-            <span class="eq-line">T² = 1.4² = <b>1.96 s²</b></span></div></div>
-          <div class="calc-step hi"><span class="cs-n">3</span><div><strong>Slope</strong> (y = T², x = L): rise over run
-            <span class="eq-line">S = ΔT² / ΔL = (2.56 − 1.96) / (60 − 40) = 0.60 / 20 = <b>0.03 s²/cm</b></span></div></div>
+            <span class="eq-line">T² = 1.269² = <b>1.610 s²</b></span></div></div>
+          <div class="calc-step hi"><span class="cs-n">3</span><div><strong>Slope</strong> from two points on the line, with Y = T² and X = L
+            <span class="eq-line">S = (Y₂ − Y₁) / (X₂ − X₁) = (3.222 − 0.806) / (80 − 20) = 2.416 / 60 = <b>0.04027 s²/cm</b></span></div></div>
           <div class="calc-step"><span class="cs-n">4</span><div><strong>Substitute</strong>
-            <span class="eq-line">g = 4π² / S = 4π² / 0.03 = 39.478 / 0.03 = 1315.947</span></div></div>
+            <span class="eq-line">g = 4π² / S = 39.478 / 0.04027</span></div></div>
           <div class="calc-step result"><span class="cs-n">✓</span><div><strong>Result</strong>
-            <span class="eq-line big">Acceleration due to gravity g ≈ <b>1315.95 cm/s²</b></span>
-            <span class="sub">= 13.16 m/s²</span></div></div>
+            <span class="eq-line big">Acceleration due to gravity g ≈ <b>980.33 cm/s²</b></span>
+            <span class="sub">= 9.80 m/s²</span></div></div>
         </div>
 
         <h2 class="sub-h">cm/s² or m/s²?</h2>
@@ -226,17 +231,17 @@
           <div class="unit-arrow" aria-hidden="true">÷ 100</div>
           <div class="unit-box"><div class="ub-k">100 cm = 1 m</div><div class="ub-v">g in <b>m/s²</b></div></div>
         </div>
-        <p class="units-eq">1315.95 cm/s² ÷ 100 = <b>13.16 m/s²</b> &nbsp;·&nbsp; 980 cm/s² ÷ 100 = <b>9.8 m/s²</b></p>
+        <p class="units-eq">980.33 cm/s² ÷ 100 = <b>9.80 m/s²</b></p>
 
         <div class="neutral-note">
-          <p>The accepted value is about <b>980 cm/s²</b> (9.8 m/s²). Periods timed by hand over only 10 oscillations can shift the result, and a timing error matters most at short lengths: at L = 20 cm, being 0.2 s off on T<sub>10</sub> changes T² by about 4%, while at 80 cm the same slip changes it by about 2%.</p>
+          <p>Real readings scatter more than this example. Periods timed by hand over only 10 oscillations can shift the result, and a timing error matters most at short lengths: at L = 20 cm, being 0.2 s off on T<sub>10</sub> changes T² by about 4.5%, while at 80 cm the same slip changes it by about 2%.</p>
         </div>
 
         <h2 class="sub-h">Common slips</h2>
         <div class="slips">
-          <div class="slip"><h3>Forgetting ÷ 10</h3><p>T<sub>10</sub> is the time for ten swings. Squaring 14 instead of 1.4 gives 196 instead of 1.96: every T² is 100 times too big, and g comes out 100 times too small.</p></div>
-          <div class="slip"><h3>Slope upside down</h3><p>T² is on the y-axis, so S = ΔT² / ΔL. Taking ΔL / ΔT² = 20 / 0.60 = 33.3 would give g = 1.18, which is far off.</p></div>
-          <div class="slip"><h3>Mixing units</h3><p>With L in cm the answer is in cm/s². Comparing 1315.95 with 9.8 directly mixes cm and m. Divide by 100 first, or compare with 980.</p></div>
+          <div class="slip"><h3>Forgetting ÷ 10</h3><p>T<sub>10</sub> is the time for ten swings. Squaring 12.69 instead of 1.269 gives 161 instead of 1.61: every T² is 100 times too big, and g comes out 100 times too small.</p></div>
+          <div class="slip"><h3>Slope upside down</h3><p>T² is on the y-axis, so S = ΔT² / ΔL. Taking ΔL / ΔT² = 60 / 2.416 = 24.8 would give g = 1.59, which is far off.</p></div>
+          <div class="slip"><h3>Mixing units</h3><p>With L in cm the answer is in cm/s². Comparing 980 with 9.8 directly mixes cm and m. Divide by 100 first, or compare with 980 cm/s².</p></div>
           <div class="slip"><h3>Plotting T, not T²</h3><p>T against L is a curve. Only T² against L is a straight line whose slope is 4π² / g.</p></div>
         </div>
         <div class="page-end"><button type="button" class="btn-next" data-next>Next →</button></div>
@@ -247,7 +252,7 @@
     <section class="view" id="view-graph" data-title="Graph">
       <div class="sheet wide">
         <h1 class="page-h">The T² against L graph</h1>
-        <p class="lede">Point at a reading on the graph or in the table to see its values. Then compare slopes taken different ways.</p>
+        <p class="lede">The example readings from Formula &amp; results. Point at a reading on the graph or in the table to see its values, then compare slopes taken in different ways.</p>
         <div class="gp-wrap">
           <div class="graph-wrap"><svg id="g-graph" class="graph" viewBox="0 0 760 540" role="img" aria-label="Graph of T squared against L with four readings"></svg></div>
           <div class="gp-side">
@@ -257,8 +262,8 @@
             </table>
             <div class="ctl"><span class="ctl-label">Slope from</span>
               <div class="seg vert" id="g-mode" role="radiogroup" aria-label="Slope from">
-                <button type="button" role="radio" aria-checked="true" data-mode="lab">Points at 40 and 60 cm</button>
-                <button type="button" role="radio" aria-checked="false" data-mode="ends">Points at 20 and 80 cm</button>
+                <button type="button" role="radio" aria-checked="true" data-mode="ends">Points at 20 and 80 cm</button>
+                <button type="button" role="radio" aria-checked="false" data-mode="mid">Points at 40 and 60 cm</button>
                 <button type="button" role="radio" aria-checked="false" data-mode="fit">Best-fit line (least squares)</button>
               </div>
             </div>
@@ -266,7 +271,7 @@
             <div class="g-read" id="g-read" aria-live="polite"></div>
           </div>
         </div>
-        <p class="note">The lab book used the points at 40 and 60 cm, giving S = 0.03 s²/cm and g ≈ 1315.95 cm/s². A slope from points far apart, or from a best-fit line, uses more of the data.</p>
+        <p class="note">Points close together magnify rounding and timing errors. A slope from points far apart, or from a best-fit line, uses more of the data.</p>
         <div class="page-end"><button type="button" class="btn-next" data-next>Next →</button></div>
       </div>
     </section>
@@ -274,7 +279,7 @@
     <!-- ============ MCQs ============ -->
     <section class="view" id="view-mcq" data-title="MCQs">
       <div class="sheet">
-        <h1 class="page-h">Check your understanding</h1>
+        <h1 class="page-h">Check understanding</h1>
         <div class="mcq-bar">
           <div class="mcq-score" id="mcq-score">0 correct</div>
           <button type="button" class="btn-quiet" id="mcq-reset">Reset &amp; reshuffle</button>
@@ -288,14 +293,17 @@
     <section class="view" id="view-practical" data-title="Practical">
       <div class="sheet wide">
         <h1 class="page-h">Practical</h1>
-        <p class="lede">Set the length on the ruler, pull the bob aside and let go. Time 10 oscillations, record them, then find the slope of T² against L and work out g.</p>
+        <div class="prac-intro">
+          <p class="lede">Set the length on the metre rule, pull the bob aside and let go. Time 10 oscillations, record them, then find the slope of T² against L and calculate g.</p>
+          <button type="button" class="btn-tut" id="tut-start"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M6 4l10 6-10 6z" fill="currentColor"/></svg>Start tutorial</button>
+        </div>
 
         <div class="prac">
           <div class="rig-col">
             <div class="rig-frame" id="rig-frame">
-              <svg id="rig" viewBox="0 0 520 720" role="img" aria-label="Pendulum on a retort stand with a metre rule beside it"></svg>
+              <svg id="rig" viewBox="0 0 520 720" role="img" aria-label="Front view of a pendulum on a retort stand, with a vertical metre rule beside the string"></svg>
             </div>
-            <div class="rig-msg" id="rig-msg" aria-live="polite">Drag the brass slider on the ruler to set L, then pull the bob sideways and let go.</div>
+            <div class="rig-msg" id="rig-msg" aria-live="polite">Drag the brass tab on the metre rule to set L, then pull the bob sideways and let go.</div>
           </div>
 
           <div class="prac-work">
@@ -308,20 +316,14 @@
               <div class="quick" id="p-quick" aria-label="Quick lengths">
                 <button type="button" data-l="20">20</button><button type="button" data-l="40">40</button><button type="button" data-l="60">60</button><button type="button" data-l="80">80</button><span class="quick-u">cm</span>
               </div>
-              <div class="ctl">
-                <span class="ctl-label">Physics</span>
-                <div class="seg" id="p-mode" role="radiogroup" aria-label="Physics mode">
-                  <button type="button" role="radio" aria-checked="true" data-mode="real">Real (g = 980 cm/s²)</button>
-                  <button type="button" role="radio" aria-checked="false" data-mode="lab">Lab mode (your times)</button>
-                </div>
-              </div>
+              <p class="p-note">Simulated with g = 980 cm/s².</p>
               <div class="p-row">
                 <label class="chk"><input type="checkbox" id="p-slow"> Slow motion ×¼</label>
                 <button type="button" class="btn-quiet" id="p-stop">Stop the bob</button>
               </div>
             </div>
 
-            <div class="panel">
+            <div class="panel" id="sw-panel">
               <h2 class="panel-h">Stopwatch</h2>
               <div class="sw-row">
                 <div class="stopwatch" id="stopwatch"><span id="sw-val">0.00</span><small>s</small></div>
@@ -330,23 +332,24 @@
               <div class="sw-actions">
                 <button type="button" class="btn-main" id="sw-start">Start <kbd>Space</kbd></button>
                 <button type="button" class="btn-quiet" id="sw-reset">Reset</button>
-                <button type="button" class="btn-quiet" id="sw-auto">Auto-count 10</button>
+                <button type="button" class="toggle" id="sw-auto" aria-pressed="false"><span class="tg-track" aria-hidden="true"><span class="tg-knob"></span></span>Auto-count 10</button>
               </div>
               <button type="button" class="btn-record" id="sw-record">Record T<sub>10</sub> for L = <span id="rec-l">20</span> cm</button>
-              <p class="sw-msg" id="sw-msg" aria-live="polite">Start the watch as the bob crosses the centre mark moving right. Each later rightward crossing is one oscillation.</p>
+              <p class="sw-msg" id="sw-msg" aria-live="polite">Start the watch as the bob crosses the centre mark moving right and stop it on the 10th rightward crossing. With Auto-count 10 on, each release starts the timer automatically.</p>
             </div>
           </div>
         </div>
 
         <div class="prac-lower">
-          <div class="panel">
+          <div class="panel" id="tbl-panel">
             <div class="panel-head">
               <h2 class="panel-h">Observation table</h2>
               <div class="tbl-actions">
                 <button type="button" class="btn-quiet sm" id="t-add">Add row</button>
-                <button type="button" class="btn-quiet sm" id="t-fill">Fill T and T² for me</button>
+                <button type="button" class="btn-quiet sm" id="t-fill">Fill T and T²</button>
               </div>
             </div>
+            <div class="tut-formula" id="tut-formula" hidden></div>
             <div class="table-wrap">
               <table class="obs small edit" id="p-table">
                 <thead><tr><th>L<span class="u">cm</span></th><th>T<sub>10</sub><span class="u">s</span></th><th>T = T<sub>10</sub> ÷ 10<span class="u">s</span></th><th>T²<span class="u">s²</span></th><th><span class="sr">Remove</span></th></tr></thead>
@@ -356,22 +359,34 @@
             <p class="tbl-msg" id="tbl-msg" aria-live="polite"></p>
           </div>
 
-          <div class="panel">
+          <div class="panel" id="graph-panel">
             <h2 class="panel-h">T² against L</h2>
             <div class="seg" id="s-mode" role="radiogroup" aria-label="Slope method">
               <button type="button" role="radio" aria-checked="true" data-mode="pick">Pick two points</button>
               <button type="button" role="radio" aria-checked="false" data-mode="line">Drag a best-fit line</button>
             </div>
-            <div class="graph-wrap"><svg id="p-graph" class="graph" viewBox="0 0 760 540" role="img" aria-label="Your graph of T squared against L"></svg></div>
+            <div class="graph-wrap"><svg id="p-graph" class="graph" viewBox="0 0 760 540" role="img" aria-label="Graph of T squared against L from the observation table"></svg></div>
             <p class="slope-out" id="slope-out" aria-live="polite"></p>
           </div>
 
-          <div class="panel">
-            <h2 class="panel-h">Calculate g</h2>
-            <div class="calc-form">
-              <div class="cf"><label for="in-s">Slope S = ΔT² / ΔL <span class="u">s²/cm</span></label><input type="text" inputmode="decimal" id="in-s" autocomplete="off"></div>
-              <div class="cf"><label>4π²</label><div class="fixed">39.478</div></div>
-              <div class="cf"><label for="in-g">g = 4π² / S</label><div class="g-in"><input type="text" inputmode="decimal" id="in-g" autocomplete="off"><select id="in-gu" aria-label="Unit of g"><option value="cm">cm/s²</option><option value="m">m/s²</option></select></div></div>
+          <div class="panel" id="calc-panel">
+            <h2 class="panel-h">Calculation</h2>
+            <div class="calc-rows">
+              <div class="cr" id="cr-s">
+                <label for="in-s">Slope S = ΔT² / ΔL <span class="u">s²/cm</span></label>
+                <input type="text" inputmode="decimal" id="in-s" autocomplete="off">
+                <div class="cr-sub">S = (Y₂ − Y₁) / (X₂ − X₁), with Y = T² and X = L, from two points on the line</div>
+                <div class="cr-work" id="s-work"></div>
+              </div>
+              <div class="cr" id="cr-4pi">
+                <label>4π²</label>
+                <div class="fixed">39.478</div>
+              </div>
+              <div class="cr" id="cr-g">
+                <label for="in-g">Acceleration due to gravity g = 4π² / S <span class="u">cm/s²</span></label>
+                <input type="text" inputmode="decimal" id="in-g" autocomplete="off">
+                <div class="cr-work" id="g-work"></div>
+              </div>
             </div>
             <div class="calc-actions">
               <button type="button" class="btn-main" id="btn-check">Check</button>
@@ -384,7 +399,6 @@
 
         <div class="prac-foot">
           <button type="button" class="btn-quiet" id="btn-reset">Start over</button>
-          <button type="button" class="btn-quiet" id="btn-load">Load my lab values</button>
         </div>
 
         <div class="extras" id="extras">
@@ -398,6 +412,10 @@
       </div>
     </section>
   </main>
+</div>
+<div class="tut-bar" id="tut-bar" hidden role="status" aria-live="polite">
+  <div class="tut-main"><div class="tut-title" id="tut-title"></div><div class="tut-text" id="tut-text"></div><div class="tut-f" id="tut-f"></div></div>
+  <div class="tut-ctl"><button type="button" class="tut-btn" id="tut-skip">Skip step</button><button type="button" class="tut-btn stop" id="tut-stop">Stop</button></div>
 </div>
 <script src="js/app.js"></script>
 </body>

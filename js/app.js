@@ -7,15 +7,17 @@
      ===================================================================== */
   const G_REAL = 980;                      // cm/s²
   const FOUR_PI2 = 4 * Math.PI * Math.PI;  // 39.478…
-  const LAB = {
+  /* Example readings: ideal small-angle swings with g = 980 cm/s², rounded like a stopwatch */
+  const EX = {
     rows: [
-      { L: 20, T10: 10, T: 1, T2: 1 },
-      { L: 40, T10: 14, T: 1.4, T2: 1.96 },
-      { L: 60, T10: 16, T: 1.6, T2: 2.56 },
-      { L: 80, T10: 18, T: 1.8, T2: 3.24 }
-    ],
-    S: 0.03, g: 1315.947
+      { L: 20, T10: 8.98, T: 0.898, T2: 0.806 },
+      { L: 40, T10: 12.69, T: 1.269, T2: 1.610 },
+      { L: 60, T10: 15.55, T: 1.555, T2: 2.418 },
+      { L: 80, T10: 17.95, T: 1.795, T2: 3.222 }
+    ]
   };
+  /* g as worked by hand: S rounded to 4 significant figures, 4π² = 39.478 */
+  const handG = S => 39.478 / +Number(S).toPrecision(4);
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const NS = 'http://www.w3.org/2000/svg';
   function el(tag, attrs, parent) {
@@ -205,7 +207,7 @@
   window.addEventListener('hashchange', () => goTo(fromHash(), false));
 
   /* =====================================================================
-     4. CUSTOM CURSOR — a tiny pendulum whose bob swings as you move
+     4. CUSTOM CURSOR — a tiny pendulum whose bob swings with the pointer
      ===================================================================== */
   const cur = $('cursor');
   const fine = window.matchMedia('(pointer:fine)').matches;
@@ -550,18 +552,18 @@
         txt(s, X(100), Y(0) + 40, 'L (cm)', { 'font-size': 17, 'font-weight': 700, fill: '#8d6424', 'text-anchor': 'end' });
         [0, 20, 40, 60, 80, 100].forEach(v => txt(s, X(v), Y(0) + 20, String(v), { 'font-size': 14, fill: '#3a4a4f', 'text-anchor': 'middle' }));
         [1, 2, 3, 4].forEach(v => txt(s, X(0) - 10, Y(v) + 5, String(v), { 'font-size': 14, fill: '#3a4a4f', 'text-anchor': 'end' }));
-        el('line', { x1: X(10), y1: Y(10 * .0366 + .36), x2: X(92), y2: Y(92 * .0366 + .36), stroke: '#2b6a57', 'stroke-width': 2.4 }, s);
-        el('path', { d: `M${X(40)} ${Y(1.96)} H${X(60)} V${Y(2.56)}`, fill: 'rgba(184,135,58,.12)', stroke: '#8d6424', 'stroke-dasharray': '6 4', 'stroke-width': 1.8 }, s);
-        hand(s, X(50), Y(1.96) + 22, 'ΔL', '#8d6424', 20, 'middle');
-        hand(s, X(60) + 8, Y(2.26) + 6, 'ΔT²', '#8d6424', 20);
-        LAB.rows.forEach(r => el('circle', { cx: X(r.L), cy: Y(r.T2), r: 5.5, fill: '#fff', stroke: '#8d6424', 'stroke-width': 2.4 }, s));
-        hand(s, 300, 80, 'S = ΔT² / ΔL', '#2b6a57', 26, 'middle');
+        el('line', { x1: X(5), y1: Y(5 * .04027), x2: X(95), y2: Y(95 * .04027), stroke: '#2b6a57', 'stroke-width': 2.4 }, s);
+        el('path', { d: `M${X(20)} ${Y(0.806)} H${X(80)} V${Y(3.222)}`, fill: 'rgba(184,135,58,.12)', stroke: '#8d6424', 'stroke-dasharray': '6 4', 'stroke-width': 1.8 }, s);
+        hand(s, X(50), Y(0.806) + 22, 'ΔL', '#8d6424', 20, 'middle');
+        hand(s, X(80) + 8, Y(2.0) + 6, 'ΔT²', '#8d6424', 20);
+        EX.rows.forEach(r => el('circle', { cx: X(r.L), cy: Y(r.T2), r: 5.5, fill: '#fff', stroke: '#8d6424', 'stroke-width': 2.4 }, s));
+        hand(s, 190, 80, 'S = ΔT² / ΔL', '#2b6a57', 26, 'middle');
       },
       function s7() {
         const s = mk(460, 360);
         txt(s, 230, 150, 'g = 4π² / S', { 'font-family': 'Instrument Serif, serif', 'font-size': 64, fill: '#1b272b', 'text-anchor': 'middle' });
-        txt(s, 230, 214, '4π² / 0.03 = 1315.95 cm/s²', { 'font-family': 'JetBrains Mono, monospace', 'font-size': 19, fill: '#2b6a57', 'text-anchor': 'middle' });
-        txt(s, 230, 248, '÷ 100  →  13.16 m/s²', { 'font-family': 'JetBrains Mono, monospace', 'font-size': 17, fill: '#8d6424', 'text-anchor': 'middle' });
+        txt(s, 230, 214, '39.478 / 0.04027 ≈ 980 cm/s²', { 'font-family': 'JetBrains Mono, monospace', 'font-size': 19, fill: '#2b6a57', 'text-anchor': 'middle' });
+        txt(s, 230, 248, '÷ 100  →  9.80 m/s²', { 'font-family': 'JetBrains Mono, monospace', 'font-size': 17, fill: '#8d6424', 'text-anchor': 'middle' });
       }
     ];
     function show(k) {
@@ -670,10 +672,10 @@
      ===================================================================== */
   (function graphPage() {
     const svg = $('g-graph'), tbody = document.querySelector('#g-table tbody'), read = $('g-read'), refChk = $('g-ref');
-    let mode = 'lab', lit = -1;
+    let mode = 'ends', lit = -1;
     radioGroup('g-mode', b => { mode = b.dataset.mode; render(); });
     refChk.addEventListener('change', render);
-    const rows = LAB.rows.map((r, i) => {
+    const rows = EX.rows.map((r, i) => {
       const tr = document.createElement('tr'); tr.innerHTML = `<td>${r.L}</td><td>${r.T2}</td>`;
       tr.addEventListener('mouseenter', () => light(i)); tr.addEventListener('mouseleave', () => light(-1));
       tbody.appendChild(tr); return tr;
@@ -683,7 +685,7 @@
       lit = i;
       rows.forEach((tr, k) => tr.classList.toggle('lit', k === i));
       pts.forEach((p, k) => p.classList.toggle('lit', k === i));
-      if (i < 0) G.layers.hover.innerHTML = ''; else hoverMark(G, G.layers.hover, LAB.rows[i].L, LAB.rows[i].T2);
+      if (i < 0) G.layers.hover.innerHTML = ''; else hoverMark(G, G.layers.hover, EX.rows[i].L, EX.rows[i].T2);
     }
     function render() {
       G = graphBase(svg, { xmax: 100, ymax: 4, xstep: 10, ystep: 0.5 });
@@ -693,10 +695,10 @@
         txt(G.layers.ref, G.X(90), G.Y(Sr * 90) - 14, 'g = 980 cm/s²', { class: 'hand', 'font-size': 22, fill: '#4a7894', 'text-anchor': 'end' });
       }
       let S, c, p1, p2, how;
-      const R = LAB.rows;
-      if (mode === 'lab') { p1 = [40, 1.96]; p2 = [60, 2.56]; how = 'the readings at 40 and 60 cm'; }
-      else if (mode === 'ends') { p1 = [20, 1]; p2 = [80, 3.24]; how = 'the readings at 20 and 80 cm'; }
-      else { const f = leastSq(R.map(r => [r.L, r.T2])); p1 = [20, f.S * 20 + f.c]; p2 = [80, f.S * 80 + f.c]; how = 'two points on the least-squares line'; }
+      const R = EX.rows;
+      if (mode === 'ends') { p1 = [20, 0.806]; p2 = [80, 3.222]; how = 'the readings at 20 and 80 cm'; }
+      else if (mode === 'mid') { p1 = [40, 1.610]; p2 = [60, 2.418]; how = 'the readings at 40 and 60 cm'; }
+      else { const f = leastSq(R.map(r => [r.L, r.T2])); p1 = [20, +(f.S * 20 + f.c).toFixed(3)]; p2 = [80, +(f.S * 80 + f.c).toFixed(3)]; how = 'two points on the least-squares line'; }
       S = (p2[1] - p1[1]) / (p2[0] - p1[0]); c = p1[1] - S * p1[0];
       lineSeg(G, G.layers.line, S, c, 4, 98);
       slopeTri(G, G.layers.tri, p1, p2);
@@ -705,8 +707,8 @@
         g.addEventListener('mouseenter', () => light(i)); g.addEventListener('mouseleave', () => light(-1));
         return g;
       });
-      const g = FOUR_PI2 / S;
-      read.innerHTML = `From ${how}:<br>S = ΔT² / ΔL = ${trim(p2[1] - p1[1], 3)} / ${trim(p2[0] - p1[0], 2)} = <b>${trim(S, 4)} s²/cm</b><br>g = 4π² / S = <b>${g.toFixed(2)} cm/s²</b><br>= <b>${(g / 100).toFixed(2)} m/s²</b>`;
+      const Sr = +S.toPrecision(4), g = handG(S);
+      read.innerHTML = `From ${how}:<br>S = (Y₂ − Y₁) / (X₂ − X₁) = ${trim(p2[1] - p1[1], 3)} / ${trim(p2[0] - p1[0], 2)} = <b>${Sr} s²/cm</b><br>g = 39.478 / ${Sr} = <b>${g.toFixed(2)} cm/s²</b><br>= <b>${(g / 100).toFixed(2)} m/s²</b>`;
       if (lit >= 0) light(lit);
     }
     render();
@@ -717,15 +719,15 @@
      ===================================================================== */
   const MCQ = [
     { q: 'What is the aim of this practical?', a: 'To determine g, the acceleration due to gravity', o: ['To determine the mass of the bob from its swing', 'To determine the tension in the thread', 'To determine the speed of the bob at the centre'],
-      hint: 'Look at what the slope of the graph finally gives you.', ex: 'The slope of T² against L gives 4π²/g, so the experiment determines g.' },
+      hint: 'Consider what the slope of the graph finally gives.', ex: 'The slope of T² against L gives 4π²/g, so the experiment determines g.' },
     { q: 'The length L of a simple pendulum is measured from the point of suspension to…', a: 'the centre of the bob', o: ['the top of the bob', 'the bottom of the bob', 'the floor'],
       hint: 'The bob behaves as if all its mass were at one point.', ex: 'L = thread length below the clamp + radius of the bob, i.e. to the centre of the bob.' },
     { q: 'One complete oscillation of a pendulum is…', a: 'a swing from one side to the other and back again', o: ['a swing from one side to the other only', 'a swing from the centre to one side', 'the time the bob is at rest'],
       hint: 'After one oscillation the bob is back where it started, moving the same way.', ex: 'A full to-and-fro swing returns the bob to its starting position and direction.' },
-    { q: 'T₁₀ = 14 s for ten oscillations. What is the period T?', a: '1.4 s', o: ['14 s', '140 s', '0.14 s'],
-      hint: 'T = T₁₀ ÷ 10.', ex: 'T = 14 ÷ 10 = 1.4 s.' },
-    { q: 'If T = 1.6 s, then T² is…', a: '2.56 s²', o: ['3.2 s²', '1.26 s²', '25.6 s²'],
-      hint: 'Square means multiply by itself: 1.6 × 1.6.', ex: '1.6 × 1.6 = 2.56 s².' },
+    { q: 'T₁₀ = 15.5 s for ten oscillations. What is the period T?', a: '1.55 s', o: ['15.5 s', '155 s', '0.155 s'],
+      hint: 'T = T₁₀ ÷ 10.', ex: 'T = 15.5 ÷ 10 = 1.55 s.' },
+    { q: 'If T = 1.3 s, then T² is…', a: '1.69 s²', o: ['2.6 s²', '1.14 s²', '16.9 s²'],
+      hint: 'Square means multiply by itself: 1.3 × 1.3.', ex: '1.3 × 1.3 = 1.69 s².' },
     { q: 'The period of a simple pendulum for small angles is given by…', a: 'T = 2π √(L / g)', o: ['T = 2π √(g / L)', 'T = 2π L / g', 'T = 4π² L / g'],
       hint: 'A longer pendulum swings more slowly, so L must be in the numerator.', ex: 'T = 2π√(L/g): T grows with √L and falls as g increases.' },
     { q: 'Which pair of quantities gives a straight-line graph through the origin?', a: 'T² against L', o: ['T against L', 'T against L²', 'T² against 1/L'],
@@ -734,11 +736,11 @@
       hint: 'Compare T² = (4π²/g) L with y = S x.', ex: 'The coefficient of L is 4π²/g, so S = 4π²/g and g = 4π²/S.' },
     { q: 'How is the slope found from two points on the T² against L line?', a: 'S = ΔT² / ΔL', o: ['S = ΔL / ΔT²', 'S = T² × L', 'S = ΔT / ΔL'],
       hint: 'Slope is rise over run: change in y divided by change in x.', ex: 'y = T² and x = L, so S = ΔT² / ΔL.' },
-    { q: 'Using the points (40 cm, 1.96 s²) and (60 cm, 2.56 s²), the slope is…', a: '0.03 s²/cm', o: ['33.3 cm/s²', '0.3 s²/cm', '0.003 s²/cm'],
-      hint: '(2.56 − 1.96) / (60 − 40).', ex: '0.60 / 20 = 0.03 s²/cm.' },
-    { q: 'With S = 0.03 s²/cm, the value of g = 4π²/S is about…', a: '1315.95 cm/s²', o: ['13.16 cm/s²', '1.18 cm/s²', '131 595 cm/s²'],
-      hint: '4π² ≈ 39.478; divide by 0.03.', ex: '39.478 / 0.03 = 1315.95 cm/s² (= 13.16 m/s²).' },
-    { q: 'To convert g from cm/s² to m/s² you…', a: 'divide by 100', o: ['multiply by 100', 'divide by 1000', 'multiply by 10'],
+    { q: 'Two points on the line are (20 cm, 0.806 s²) and (80 cm, 3.222 s²). The slope is…', a: '0.0403 s²/cm', o: ['24.8 cm/s²', '0.403 s²/cm', '0.00403 s²/cm'],
+      hint: '(Y₂ − Y₁) / (X₂ − X₁) = (3.222 − 0.806) / (80 − 20).', ex: '2.416 / 60 = 0.0403 s²/cm.' },
+    { q: 'With S = 0.0403 s²/cm, the value of g = 4π²/S is about…', a: '980 cm/s²', o: ['9.8 cm/s²', '1.59 cm/s²', '98 000 cm/s²'],
+      hint: '4π² ≈ 39.478; divide by 0.0403.', ex: '39.478 / 0.0403 ≈ 980 cm/s² (= 9.80 m/s²).' },
+    { q: 'To convert g from cm/s² to m/s², the value is…', a: 'divide by 100', o: ['multiply by 100', 'divide by 1000', 'multiply by 10'],
       hint: '100 cm make 1 m, so a number of cm is 100 times the number of m.', ex: 'e.g. 980 cm/s² ÷ 100 = 9.8 m/s².' },
     { q: 'The accepted value of g is close to…', a: '980 cm/s²', o: ['98 cm/s²', '9800 cm/s²', '9.8 cm/s²'],
       hint: 'g ≈ 9.8 m/s²; convert to cm.', ex: '9.8 m/s² × 100 = 980 cm/s².' },
@@ -751,11 +753,11 @@
     { q: 'On the Moon (smaller g), the same pendulum would swing with…', a: 'a longer period', o: ['a shorter period', 'the same period', 'no oscillation at all'],
       hint: 'g is in the denominator under the square root.', ex: 'Smaller g makes L/g larger, so T increases.' },
     { q: 'Why time 10 oscillations instead of just one?', a: 'The reaction-time error is shared over ten swings', o: ['The first swing is always faster than the rest', 'A stopwatch cannot measure a single swing', 'Ten swings make the bob slow down to a steady pace'],
-      hint: 'The start/stop error is about the same however long you time.', ex: 'A 0.2 s reaction error becomes only 0.02 s on each period when divided by 10.' },
+      hint: 'The start/stop error is about the same however long the timing lasts.', ex: 'A 0.2 s reaction error becomes only 0.02 s on each period when divided by 10.' },
     { q: 'A student forgets to divide T₁₀ by 10 and plots T₁₀² against L. Their g will be…', a: '100 times too small', o: ['10 times too large', '100 times too large', 'unchanged'],
       hint: 'Every T² becomes 100 times bigger, so the slope does too.', ex: 'S is 100 times too big, and g = 4π²/S is 100 times too small.' },
     { q: 'At which length does a 0.2 s timing error in T₁₀ affect T² the most?', a: 'The shortest length, 20 cm', o: ['The longest length, 80 cm', 'It is the same at every length', 'The middle length, 60 cm'],
-      hint: 'The same error is a bigger fraction of a smaller time.', ex: '0.2 s out of 10 s is 2% (4% on T²); out of 18 s it is about 1% (2% on T²).' }
+      hint: 'The same error is a bigger fraction of a smaller time.', ex: 'At 20 cm, 0.2 s out of about 9 s is 2.2% (about 4.5% on T²); at 80 cm it is about 1.1% (2.2% on T²).' }
   ];
   (function mcq() {
     const list = $('mcq-list'), score = $('mcq-score');
@@ -795,84 +797,85 @@
   })();
 
   /* =====================================================================
-     12. PRACTICAL
+     12. PRACTICAL — front (coronal) view, metre rule beside the string
      ===================================================================== */
   (function practical() {
-    /* ---------- lab-mode model: reproduces the recorded periods ---------- */
-    const LP = LAB.rows.map(r => [r.L, r.T2]);
-    function labT2(L) {
-      if (L <= LP[0][0]) return LP[0][1] * L / LP[0][0];
-      for (let i = 1; i < LP.length; i++) if (L <= LP[i][0]) { const [a, b] = [LP[i - 1], LP[i]]; return a[1] + (b[1] - a[1]) * (L - a[0]) / (b[0] - a[0]); }
-      const [a, b] = [LP[LP.length - 2], LP[LP.length - 1]]; return b[1] + (b[1] - a[1]) / (b[0] - a[0]) * (L - b[0]);
-    }
-    const st = { L: 20, mode: 'real', slow: false, th: 0, om: 0, simT: 0, drag: null, swinging: false, relDeg: 0 };
-    const gEff = () => st.mode === 'real' ? G_REAL : FOUR_PI2 * st.L / labT2(st.L);
+    const st = { L: 20, slow: false, th: 0, om: 0, simT: 0, drag: null, swinging: false, speed: 1 };
 
     /* ---------- rig drawing ---------- */
     const svg = $('rig'); bobDefs(svg, 'rg');
-    const SC = 5.6, P0 = { x: 250 };
+    const SC = 5.6;
     const stat = el('g', null, svg);
-    const P = drawStand(stat, 'rg', { rodX: 70, baseY: 690, armY: 50, pivotX: P0.x });
-    const RX = 410;
-    el('line', { x1: P.x, y1: P.y, x2: P.x, y2: 676, stroke: '#a9b8b3', 'stroke-dasharray': '4 6' }, stat);
-    // metre rule
+    const P = drawStand(stat, 'rg', { rodX: 70, baseY: 690, armY: 50, pivotX: 250 });
+    const RL = P.x + 6, RW = 40;            // metre rule hangs just beside the string, in the same plane
     const rule = el('g', null, stat);
-    el('rect', { x: RX - 6, y: P.y - 12, width: 34, height: 100 * SC + 26, rx: 4, fill: 'url(#rg-wood)', stroke: '#b89a5c' }, rule);
+    el('rect', { x: RL, y: P.y - 6, width: RW, height: 100 * SC + 20, rx: 3, fill: 'url(#rg-wood)', stroke: '#b89a5c' }, rule);
+    el('rect', { x: RL + 14, y: P.y - 14, width: 12, height: 10, rx: 2, fill: '#8a9a96' }, rule); // hanger
     for (let c = 0; c <= 100; c++) {
-      const y = P.y + c * SC, len = c % 10 === 0 ? 16 : c % 5 === 0 ? 11 : 6;
-      el('line', { x1: RX - 6, y1: y, x2: RX - 6 + len, y2: y, stroke: '#5a4a2a', 'stroke-width': c % 10 ? .8 : 1.3 }, rule);
-      if (c % 10 === 0) txt(rule, RX + 22, y + 4.5, String(c), { 'font-size': 12.5, fill: '#5a4a2a', 'text-anchor': 'end', 'font-family': 'JetBrains Mono, monospace' });
+      const y = P.y + c * SC, len = c % 10 === 0 ? 15 : c % 5 === 0 ? 10 : 5;
+      el('line', { x1: RL, y1: y, x2: RL + len, y2: y, stroke: '#5a4a2a', 'stroke-width': c % 10 ? .8 : 1.3 }, rule);
+      if (c % 10 === 0) txt(rule, RL + RW - 4, y + 4.5, String(c), { 'font-size': 12.5, fill: '#5a4a2a', 'text-anchor': 'end', 'font-family': 'JetBrains Mono, monospace' });
     }
-    txt(rule, RX + 11, P.y + 100 * SC + 30, 'cm', { 'font-size': 12, fill: '#5a4a2a', 'text-anchor': 'middle' });
-    el('line', { x1: P.x + 12, y1: P.y, x2: RX - 6, y2: P.y, stroke: '#2b6a57', 'stroke-dasharray': '3 4' }, stat);
-    // dynamic parts
+    txt(rule, RL + RW / 2, P.y + 100 * SC + 30, 'cm', { 'font-size': 12, fill: '#5a4a2a', 'text-anchor': 'middle' });
     const dyn = el('g', null, svg);
-    const restLine = el('line', { stroke: '#2b6a57', 'stroke-dasharray': '3 4' }, dyn);
+    const meanLine = el('line', { x1: P.x, x2: P.x, y2: 676, stroke: '#a9b8b3', 'stroke-dasharray': '4 6' }, dyn);
     const arcG = el('g', null, dyn); let arcL = -1;
+    const maxAng = () => Math.min(35 * Math.PI / 180, Math.asin(Math.min(1, (P.x - 22) / (st.L * SC))));
     function drawArc() {
       if (arcL === st.L) return; arcL = st.L; arcG.innerHTML = '';
       const R = st.L * SC, pt = (d, r) => [P.x + r * Math.sin(d * Math.PI / 180), P.y + r * Math.cos(d * Math.PI / 180)];
       const arc = (d1, d2, r) => { const [x1, y1] = pt(d1, r), [x2, y2] = pt(d2, r); return `M${x1} ${y1} A${r} ${r} 0 0 0 ${x2} ${y2}`; };
-      el('path', { d: `M${P.x} ${P.y} L${pt(-10, R + 18).join(' ')} ${arc(-10, 10, R + 18).replace(/^M[^A]+/, '')} Z`, fill: 'rgba(43,106,87,.07)' }, arcG);
       el('path', { d: arc(-10, 10, R), fill: 'none', stroke: '#2b6a57', 'stroke-width': 2.4, 'stroke-opacity': .5 }, arcG);
       el('path', { d: arc(-35, -10, R), fill: 'none', stroke: '#b24a37', 'stroke-width': 1.6, 'stroke-opacity': .35, 'stroke-dasharray': '4 4' }, arcG);
       el('path', { d: arc(10, 35, R), fill: 'none', stroke: '#b24a37', 'stroke-width': 1.6, 'stroke-opacity': .35, 'stroke-dasharray': '4 4' }, arcG);
       for (let d = -30; d <= 30; d += 5) {
         if (!d) continue;
         const [x1, y1] = pt(d, R + 6), [x2, y2] = pt(d, R + (d % 10 ? 12 : 16));
+        if (d > 0 && x2 > RL - 2) continue;      // right side: nothing that reaches the rule or the L tab
         el('line', { x1, y1, x2, y2, stroke: Math.abs(d) > 10 ? '#b24a37' : '#2b6a57', 'stroke-width': 1.2, 'stroke-opacity': .7 }, arcG);
       }
-      const labs = R > 150 ? [10, 20, 30] : [10, 30];
-      labs.forEach(d => [-d, d].forEach(dd => { const [x, y] = pt(dd, R + 30); txt(arcG, x, y + 4, d + '°', { 'font-size': 12, fill: d > 10 ? '#b24a37' : '#2b6a57', 'text-anchor': 'middle' }); }));
+      [10, 20, 30].forEach(d => {
+        if (d === 20 && R < 150) return;
+        [-d].forEach(dd => {                          // labels on the free (left) side only
+          const [x, y] = pt(dd, R + 30);
+          if (x < 10) return;
+          txt(arcG, x, y + 4, d + '°', { 'font-size': 12, fill: d > 10 ? '#b24a37' : '#2b6a57', 'text-anchor': 'middle' });
+        });
+      });
     }
     const mark = el('g', null, dyn);
     const markBar = el('rect', { width: 4, height: 16, x: P.x - 2, fill: '#b8873a', rx: 1 }, mark);
-    const markLab = txt(mark, P.x, 0, 'centre mark', { 'font-size': 11, fill: '#8d6424', 'text-anchor': 'middle' });
-    const str = el('line', { x1: P.x, y1: P.y, stroke: '#2b3a3e', 'stroke-width': 1.5 }, dyn);
+    const markLab = txt(mark, P.x - 6, 0, 'centre mark', { 'font-size': 11, fill: '#8d6424', 'text-anchor': 'end' });
+    const str = el('line', { x1: P.x, y1: P.y, stroke: '#2b3a3e', 'stroke-width': 1.6 }, dyn);
     const bobG = el('g', { class: 'bob-g' }, dyn);
+    const strHit = el('line', { x1: P.x, y1: P.y + 12, stroke: 'transparent', 'stroke-width': 22, 'stroke-linecap': 'round' }, bobG);
     const bobHit = el('circle', { r: 30, fill: 'transparent' }, bobG);
-    const bob = el('circle', { r: 13, fill: 'url(#rg-bob)', stroke: '#7d571d' }, bobG);
+    const bobShadow = el('ellipse', { rx: 13, ry: 4, fill: 'rgba(0,0,0,.08)' }, dyn);
+    dyn.insertBefore(bobShadow, str);
+    const bob = el('circle', { r: 14, fill: 'url(#rg-bob)', stroke: '#7d571d' }, bobG);
     const angLab = txt(dyn, 0, 0, '', { 'font-size': 18, 'font-weight': 700, 'text-anchor': 'middle', 'font-family': 'JetBrains Mono, monospace' });
     const sliderG = el('g', { class: 'slider-g' }, svg);
-    el('rect', { x: RX - 14, y: -16, width: 92, height: 32, fill: 'transparent' }, sliderG);
-    el('path', { d: `M${RX - 12} 0 l12 -10 h40 a5 5 0 0 1 5 5 v10 a5 5 0 0 1 -5 5 h-40 z`, fill: '#b8873a', stroke: '#7d571d', transform: `translate(0 0)` }, sliderG);
-    const sliderTxt = txt(sliderG, RX + 22, 5, '20', { 'font-size': 13, 'font-weight': 700, fill: '#fff', 'text-anchor': 'middle', 'font-family': 'JetBrains Mono, monospace' });
-    const lenLab = txt(svg, RX + 70, 0, '', { 'font-size': 17, 'font-weight': 700, fill: '#2b6a57', 'font-family': 'JetBrains Mono, monospace' });
+    el('rect', { x: RL + RW - 6, y: -16, width: 70, height: 32, fill: 'transparent' }, sliderG);
+    el('path', { d: `M${RL + RW - 3} 0 l12 -11 h38 a5 5 0 0 1 5 5 v12 a5 5 0 0 1 -5 5 h-38 z`, fill: '#b8873a', stroke: '#7d571d' }, sliderG);
+    const sliderTxt = txt(sliderG, RL + RW + 29, 5, '20', { 'font-size': 13, 'font-weight': 700, fill: '#fff', 'text-anchor': 'middle', 'font-family': 'JetBrains Mono, monospace' });
+    txt(sliderG, RL + RW + 62, 5, 'L', { 'font-size': 18, 'font-style': 'italic', fill: '#2b6a57', 'font-family': 'Instrument Serif, serif' });
 
+    svg.insertBefore(sliderG, dyn);          // the L tab sits behind the swinging bob
     function bobPos() { const Lp = st.L * SC; return [P.x + Lp * Math.sin(st.th), P.y + Lp * Math.cos(st.th)]; }
     function drawRig() {
       drawArc();
       const [bx, by] = bobPos(), yr = P.y + st.L * SC;
       str.setAttribute('x2', bx); str.setAttribute('y2', by);
+      strHit.setAttribute('x2', bx); strHit.setAttribute('y2', by);
       bobHit.setAttribute('cx', bx); bobHit.setAttribute('cy', by); bob.setAttribute('cx', bx); bob.setAttribute('cy', by);
-      restLine.setAttribute('x1', P.x + 14); restLine.setAttribute('x2', RX - 6); restLine.setAttribute('y1', yr); restLine.setAttribute('y2', yr);
+      bobShadow.setAttribute('cx', bx + 3); bobShadow.setAttribute('cy', by + 15);
+      meanLine.setAttribute('y1', yr + 16);
       markBar.setAttribute('y', yr + 22); markLab.setAttribute('y', yr + 54);
       sliderG.setAttribute('transform', `translate(0 ${yr})`); sliderTxt.textContent = st.L;
-      lenLab.setAttribute('y', yr + 5); lenLab.textContent = '';
       const deg = st.th * 180 / Math.PI;
-      if (st.drag === 'bob') {
+      if (st.drag) {
         angLab.textContent = `θ = ${Math.abs(deg).toFixed(0)}°`;
-        angLab.setAttribute('x', bx + (deg > 0 ? 34 : -34)); angLab.setAttribute('y', by - 18);
+        angLab.setAttribute('x', bx + (deg > 0 ? 40 : -40)); angLab.setAttribute('y', by - 20);
         angLab.setAttribute('fill', Math.abs(deg) > 10.5 ? '#b24a37' : '#2b6a57');
       } else angLab.textContent = '';
     }
@@ -882,6 +885,9 @@
     /* ---------- messages ---------- */
     const rigMsg = $('rig-msg'), swMsg = $('sw-msg');
     function say(elm, base, cls, s) { elm.className = base + (cls ? ' ' + cls : ''); elm.textContent = s; }
+
+    /* ---------- stopwatch state ---------- */
+    const sw = { running: false, start: 0, acc: 0, count: 0, frozen: false, auto: false, autoRun: false, relSign: 1, L: 20 };
 
     /* ---------- length controls ---------- */
     const lenIn = $('p-len'), lenO = $('p-len-o'), quick = Array.from(document.querySelectorAll('#p-quick button'));
@@ -893,136 +899,129 @@
       if (changed && fromUser) {
         const wasSwinging = st.swinging;
         st.th = 0; st.om = 0; st.swinging = false;
-        if (sw.running || sw.acc > 0 || sw.armed) swReset(true);
-        say(rigMsg, 'rig-msg', '', `L = ${L} cm, measured from the point of suspension to the centre of the bob.` + (wasSwinging ? ' The bob was stopped to change the length.' : ' Pull the bob aside and let go.'));
+        if (sw.running || sw.acc > 0) swReset(true);
+        say(rigMsg, 'rig-msg', '', `L = ${L} cm, from the point of suspension to the centre of the bob.` + (wasSwinging ? ' The bob was stopped to change the length.' : ' Pull the bob aside and let go.'));
       }
       drawRig();
     }
     lenIn.addEventListener('input', () => setL(+lenIn.value, true));
     quick.forEach(b => b.addEventListener('click', () => setL(+b.dataset.l, true)));
-    radioGroup('p-mode', b => {
-      st.mode = b.dataset.mode;
-      say(rigMsg, 'rig-msg', '', st.mode === 'lab'
-        ? 'Lab mode: the pendulum reproduces the recorded lab times (T₁₀ = 10, 14, 16 and 18 s at 20, 40, 60 and 80 cm).'
-        : `Real physics with g = 980 cm/s². At ${st.L} cm, 10 oscillations take about ${(10 * 2 * Math.PI * Math.sqrt(st.L / G_REAL)).toFixed(2)} s.`);
-    });
     $('p-slow').addEventListener('change', e => {
       st.slow = e.target.checked;
-      say(swMsg, 'sw-msg', '', st.slow ? 'Slow motion ×¼. The stopwatch still reads lab time, so your readings are unchanged.' : 'Normal speed.');
+      say(swMsg, 'sw-msg', '', st.slow ? 'Slow motion ×¼. The stopwatch still reads lab time, so readings are unchanged.' : 'Normal speed.');
     });
-    $('p-stop').addEventListener('click', () => { st.th = 0; st.om = 0; st.swinging = false; drawRig(); say(rigMsg, 'rig-msg', '', 'The bob is at rest. Pull it aside to start again.'); });
+    $('p-stop').addEventListener('click', () => { grabBob(); st.drag = null; st.th = 0; drawRig(); say(rigMsg, 'rig-msg', '', 'The bob is at rest. Pull it aside to start again.'); });
 
-    /* ---------- bob + slider dragging ---------- */
-    bobG.addEventListener('pointerdown', e => {
-      e.preventDefault(); st.drag = 'bob'; st.swinging = false; st.om = 0;
-      document.body.classList.add('dragging');
-    });
+    /* ---------- grabbing and releasing the pendulum ---------- */
+    function grabBob() {
+      st.swinging = false; st.om = 0;
+      if (sw.running) {                                    // touching the pendulum interrupts a running count
+        sw.acc = swTime(); sw.running = false; sw.autoRun = false; swShow();
+        say(swMsg, 'sw-msg', 'warn', `Timer stopped at ${sw.acc.toFixed(2)} s after ${sw.count} oscillation${sw.count === 1 ? '' : 's'}: the pendulum was disturbed mid-count. Reset and time 10 oscillations again.`);
+      }
+    }
+    function releaseBob() {
+      const d = Math.abs(st.th * 180 / Math.PI);
+      st.drag = null;
+      if (d < 1) { st.th = 0; say(rigMsg, 'rig-msg', '', 'Pull the bob a little further aside, about 5° to 8°.'); drawRig(); return; }
+      st.swinging = true;
+      if (d > 10.5) {
+        const pct = ((periodOf(1, 1, st.th) / (2 * Math.PI)) - 1) * 100;
+        say(rigMsg, 'rig-msg', 'warn', `Released at ${d.toFixed(0)}°, which is too large. T = 2π√(L/g) holds only for small angles (under about 10°); here the period runs about ${pct.toFixed(1)}% long. Stop the bob and release it from a smaller angle.`);
+      } else say(rigMsg, 'rig-msg', 'ok', `Released at ${d.toFixed(0)}°: a good small angle.` + (sw.auto ? '' : ' Start the stopwatch as the bob crosses the centre mark moving right.'));
+      if (sw.auto) {                                       // auto-count: reset, start at release, count 10 returns
+        sw.running = true; sw.autoRun = true; sw.start = st.simT; sw.acc = 0; sw.count = 0; sw.frozen = false;
+        sw.relSign = Math.sign(st.th); sw.L = st.L; showCount();
+        say(swMsg, 'sw-msg', '', 'Auto-count: the timer started at release and counts each return of the bob to the release point.');
+      }
+      drawRig();
+    }
+    bobG.addEventListener('pointerdown', e => { e.preventDefault(); grabBob(); st.drag = 'bob'; });
     sliderG.addEventListener('pointerdown', e => { e.preventDefault(); st.drag = 'slider'; });
     window.addEventListener('pointermove', e => {
-      if (!st.drag) return;
+      if (st.drag !== 'bob' && st.drag !== 'slider') return;
       const p = svgPoint(svg, e);
       if (st.drag === 'bob') {
-        let a = Math.atan2(p.x - P.x, Math.max(20, p.y - P.y));
-        a = clamp(a, -35 * Math.PI / 180, 35 * Math.PI / 180);
-        st.th = a; st.om = 0;
-        const d = Math.abs(a * 180 / Math.PI);
+        const m = maxAng();
+        st.th = clamp(Math.atan2(p.x - P.x, Math.max(20, p.y - P.y)), -m, m); st.om = 0;
+        const d = Math.abs(st.th * 180 / Math.PI);
         if (d > 10.5) say(rigMsg, 'rig-msg', 'warn', `θ = ${d.toFixed(0)}°: too large. Keep the angle under 10°.`);
         else say(rigMsg, 'rig-msg', '', `θ = ${d.toFixed(0)}°. Let go to release.`);
         drawRig();
       } else setL((p.y - P.y) / SC, true);
     });
-    window.addEventListener('pointerup', () => {
-      if (st.drag === 'bob') {
-        const d = Math.abs(st.th * 180 / Math.PI);
-        st.relDeg = d;
-        if (d < 1) { st.th = 0; say(rigMsg, 'rig-msg', '', 'Pull the bob a little further aside, about 5° to 8°.'); }
-        else {
-          st.swinging = true;
-          if (d > 10.5) {
-            const pct = ((periodOf(1, 1, st.th) / (2 * Math.PI)) - 1) * 100;
-            say(rigMsg, 'rig-msg', 'warn', `Released at ${d.toFixed(0)}°, which is too large. T = 2π√(L/g) assumes a small angle (under 10°); here the period runs about ${pct.toFixed(1)}% long. Stop the bob and release it from a smaller angle.`);
-          } else say(rigMsg, 'rig-msg', 'ok', `Released at ${d.toFixed(0)}°: a good small angle. Start the stopwatch as the bob crosses the centre mark moving right.`);
-        }
-        drawRig();
-      }
-      st.drag = null; document.body.classList.remove('dragging');
-    });
+    window.addEventListener('pointerup', () => { if (st.drag === 'bob') releaseBob(); else if (st.drag === 'slider') st.drag = null; });
 
     /* ---------- stopwatch + oscillation counter ---------- */
-    const sw = { running: false, start: 0, acc: 0, count: 0, armed: false, auto: false };
-    const swVal = $('sw-val'), swBox = $('stopwatch'), ctVal = $('ct-val'), ctBox = $('counter'), btnStart = $('sw-start');
+    const swVal = $('sw-val'), swBox = $('stopwatch'), ctVal = $('ct-val'), ctBox = $('counter'), btnStart = $('sw-start'), btnAuto = $('sw-auto');
     const dots = $('ct-dots'); for (let i = 0; i < 10; i++) dots.appendChild(document.createElement('i'));
     function swTime() { return sw.running ? sw.acc + (st.simT - sw.start) : sw.acc; }
-    function showCount() {
-      ctVal.textContent = sw.count;
-      Array.from(dots.children).forEach((d, i) => d.classList.toggle('on', i < sw.count));
-    }
+    function showCount() { ctVal.textContent = sw.count; Array.from(dots.children).forEach((d, i) => d.classList.toggle('on', i < sw.count)); }
     function swShow() { swVal.textContent = swTime().toFixed(2); swBox.classList.toggle('running', sw.running); btnStart.firstChild.textContent = sw.running ? 'Stop ' : 'Start '; }
     function swReset(silent) {
-      sw.running = false; sw.acc = 0; sw.count = 0; sw.armed = false; sw.auto = false; showCount(); swShow();
-      $('sw-auto').classList.remove('on');
+      sw.running = false; sw.autoRun = false; sw.acc = 0; sw.count = 0; sw.frozen = false; showCount(); swShow();
       if (!silent) say(swMsg, 'sw-msg', '', 'Stopwatch reset to 0.00 s.');
     }
+    function setAuto(on) {
+      sw.auto = on; btnAuto.setAttribute('aria-pressed', on ? 'true' : 'false');
+      if (!on && sw.autoRun) { sw.acc = swTime(); sw.running = false; sw.autoRun = false; swShow(); }
+      say(swMsg, 'sw-msg', '', on ? 'Auto-count 10 is on. Each pull and release resets the timer, starts it, counts 10 oscillations and then freezes the reading.' : 'Auto-count 10 is off. Time by hand with Start and Stop.');
+    }
+    btnAuto.addEventListener('click', () => setAuto(!sw.auto));
     function swToggle() {
-      if (sw.armed || sw.auto) { sw.armed = false; sw.auto = false; $('sw-auto').classList.remove('on'); }
       if (!sw.running) {
-        if (sw.acc > 0) { sw.acc = 0; sw.count = 0; showCount(); }
-        sw.running = true; sw.start = st.simT; sw.count = 0; showCount();
+        sw.running = true; sw.autoRun = false; sw.start = st.simT; sw.acc = 0; sw.count = 0; sw.frozen = false; sw.L = st.L; showCount();
         say(swMsg, 'sw-msg', '', st.swinging ? 'Running. Count each rightward crossing of the centre mark; stop on 10.' : 'Running, but the bob is at rest. Release the bob, reset and start again as it crosses the centre.');
       } else {
-        sw.acc = swTime(); sw.running = false;
-        if (sw.count === 10) say(swMsg, 'sw-msg', 'ok', `Stopped at ${sw.acc.toFixed(2)} s for 10 oscillations. Record it.`);
-        else say(swMsg, 'sw-msg', 'warn', `Stopped at ${sw.acc.toFixed(2)} s, but the counter shows ${sw.count}. T₁₀ needs exactly 10 oscillations: reset and try again.`);
+        sw.acc = swTime(); sw.running = false; sw.autoRun = false;
+        if (sw.count === 10) { sw.frozen = true; say(swMsg, 'sw-msg', 'ok', `Stopped at ${sw.acc.toFixed(2)} s for 10 oscillations. Record it.`); }
+        else say(swMsg, 'sw-msg', 'warn', `Stopped at ${sw.acc.toFixed(2)} s, but the counter shows ${sw.count}. T₁₀ needs exactly 10 oscillations: reset and time again.`);
       }
       swShow();
     }
     btnStart.addEventListener('click', swToggle);
     $('sw-reset').addEventListener('click', () => swReset(false));
-    $('sw-auto').addEventListener('click', () => {
-      if (!st.swinging) { say(swMsg, 'sw-msg', 'warn', 'Release the bob first, then use Auto-count 10.'); return; }
-      swReset(true); sw.armed = true; $('sw-auto').classList.add('on');
-      say(swMsg, 'sw-msg', '', 'Auto-count: waiting for the bob to cross the centre mark moving right…');
-    });
     document.addEventListener('keydown', e => {
-      if (e.code !== 'Space' || ids[current] !== 'practical') return;
-      const tg = e.target.tagName;
-      if (tg === 'INPUT' || tg === 'SELECT' || tg === 'TEXTAREA') return;
+      if (e.code !== 'Space' || ids[current] !== 'practical' || tut.on) return;
+      if (/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
       e.preventDefault(); if (!e.repeat) swToggle();
     });
     document.addEventListener('keyup', e => { if (e.code === 'Space' && ids[current] === 'practical' && !/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) e.preventDefault(); });
-    function onCrossing(tc) {
-      flashMark();
-      if (sw.armed) {
-        sw.armed = false; sw.auto = true; sw.running = true; sw.start = tc; sw.acc = 0; sw.count = 0; showCount();
-        say(swMsg, 'sw-msg', '', 'Auto-count: started at the centre ("zero"). Counting…');
-        return;
+    function bump() { showCount(); ctBox.classList.remove('bump'); void ctBox.offsetWidth; ctBox.classList.add('bump'); }
+    function onReturn(tc) {          // auto mode: bob back at the release point
+      sw.count++; bump();
+      if (sw.count === 10) {
+        sw.acc = tc - sw.start; sw.running = false; sw.autoRun = false; sw.frozen = true; swShow();
+        say(swMsg, 'sw-msg', 'ok', `Auto-count: 10 oscillations in ${sw.acc.toFixed(2)} s. The reading is frozen; record it.`);
       }
-      if (!sw.running) return;
-      sw.count++; showCount(); ctBox.classList.remove('bump'); void ctBox.offsetWidth; ctBox.classList.add('bump');
-      if (sw.auto && sw.count === 10) {
-        sw.acc = tc - sw.start; sw.running = false; sw.auto = false; $('sw-auto').classList.remove('on');
-        say(swMsg, 'sw-msg', 'ok', `Auto-count: 10 oscillations in ${sw.acc.toFixed(2)} s. Record it.`);
-      } else if (sw.count === 11) say(swMsg, 'sw-msg', 'warn', 'That is 11: you have gone past 10. Stop, reset and time again.');
+    }
+    function onCrossing() {          // manual mode: rightward pass of the centre mark
+      sw.count++; bump();
+      if (sw.count === 11) say(swMsg, 'sw-msg', 'warn', 'That is 11: the count has gone past 10. Stop, reset and time again.');
     }
 
     /* ---------- simulation loop ---------- */
     let raf = 0, last = 0, active = false;
     function loop(now) {
       const real = Math.min(.05, (now - last) / 1000); last = now;
-      const dt = real * (st.slow ? .25 : 1);
+      const dt = real * (st.slow ? .25 : 1) * st.speed;
       if (st.swinging && !st.drag) {
-        const k = gEff() / st.L, n = Math.max(1, Math.ceil(dt / .002)), h = dt / n;
+        const k = G_REAL / st.L, n = Math.max(1, Math.ceil(dt / .002)), h = dt / n;
         for (let i = 0; i < n; i++) {
-          const th0 = st.th, t0 = st.simT;
+          const th0 = st.th, om0 = st.om, t0 = st.simT;
           rk4(st, h, k, .006); st.simT += h;
-          if (th0 < 0 && st.th >= 0 && st.om > 0) onCrossing(t0 + h * (-th0) / (st.th - th0));
+          const cross = th0 < 0 && st.th >= 0 && st.om > 0;
+          if (cross) flashMark();
+          if (!sw.running) continue;
+          if (sw.autoRun) { if (om0 !== 0 && om0 * st.om < 0 && Math.sign(st.th) === sw.relSign) onReturn(t0 + h * om0 / (om0 - st.om)); }
+          else if (cross) onCrossing();
         }
       } else st.simT += dt;
       drawRig(); swShow();
       if (active) raf = requestAnimationFrame(loop);
     }
     onEnter.practical = () => { if (!active) { active = true; last = performance.now(); raf = requestAnimationFrame(loop); } requestAnimationFrame(renderGraph); };
-    onLeave.practical = () => { active = false; cancelAnimationFrame(raf); };
+    onLeave.practical = () => { active = false; cancelAnimationFrame(raf); if (tut.on) tut.cancel = true; };
 
     /* ---------- observation table ---------- */
     const tbody = $('p-tbody'), tblMsg = $('tbl-msg');
@@ -1030,6 +1029,7 @@
     const FIELDS = ['L', 'T10', 'T', 'T2'];
     function renderTable(freshIdx) {
       tbody.innerHTML = '';
+      if (!rows.length) { tbody.innerHTML = '<tr class="empty"><td colspan="5">No readings yet. Record T₁₀ from the stopwatch, or add a row and type the readings.</td></tr>'; validate(); return; }
       rows.forEach((r, i) => {
         const tr = document.createElement('tr');
         if (i === freshIdx) tr.className = 'fresh';
@@ -1083,7 +1083,7 @@
     }
     function fillRow(r) {
       const T10 = num(r, 'T10'); if (!isFinite(T10) || T10 <= 0) return false;
-      const T = +(T10 / 10).toFixed(3); r.T = trim(T, 3); r.T2 = trim(T * T, 3); return true;
+      const T = +(T10 / 10).toFixed(3); r.T = trim(T, 3); r.T2 = (T * T).toFixed(3); return true;
     }
     $('t-add').addEventListener('click', () => { rows.push({ L: '', T10: '', T: '', T2: '' }); renderTable(); const ins = tbody.querySelectorAll('tr:last-child input'); if (ins[0]) ins[0].focus(); });
     $('t-fill').addEventListener('click', () => { let n = 0; rows.forEach(r => { if (fillRow(r)) n++; }); renderTable(); renderGraph(); tblMsg.textContent = n ? '' : 'Enter T₁₀ values first.'; });
@@ -1091,25 +1091,25 @@
       if (sw.running) { say(swMsg, 'sw-msg', 'warn', 'Stop the stopwatch first.'); return; }
       if (!(sw.acc > 0)) { say(swMsg, 'sw-msg', 'warn', 'Time 10 oscillations first.'); return; }
       if (sw.count !== 10) { say(swMsg, 'sw-msg', 'warn', `The counter shows ${sw.count}. T₁₀ needs exactly 10 oscillations: reset and time again.`); return; }
-      const T10 = +sw.acc.toFixed(2);
-      let i = rows.findIndex(r => num(r, 'L') === st.L);
+      const T10 = +sw.acc.toFixed(2), L = sw.L;
+      let i = rows.findIndex(r => num(r, 'L') === L);
       if (i < 0) i = rows.findIndex(r => !String(r.L).trim() && !String(r.T10).trim());
       if (i < 0) { rows.push({ L: '', T10: '', T: '', T2: '' }); i = rows.length - 1; }
-      rows[i].L = String(st.L); rows[i].T10 = trim(T10, 2); fillRow(rows[i]);
+      rows[i].L = String(L); rows[i].T10 = T10.toFixed(2); fillRow(rows[i]);
       rows.sort((a, b) => (num(a, 'L') || 1e9) - (num(b, 'L') || 1e9));
-      const fi = rows.findIndex(r => num(r, 'L') === st.L);
+      const fi = rows.findIndex(r => num(r, 'L') === L);
       sel = []; renderTable(fi); renderGraph();
-      say(swMsg, 'sw-msg', 'ok', `Recorded: L = ${st.L} cm, T₁₀ = ${trim(T10, 2)} s, T = ${rows[fi].T} s, T² = ${rows[fi].T2} s².`);
+      say(swMsg, 'sw-msg', 'ok', `Recorded: L = ${L} cm, T₁₀ = ${T10.toFixed(2)} s, T = ${rows[fi].T} s, T² = ${rows[fi].T2} s².`);
     });
 
     /* ---------- graph ---------- */
     const gsvg = $('p-graph'), slopeOut = $('slope-out');
-    let G = null, sel = [], sMode = 'pick', line = null, ptIndexOfRow = {}, ptEls = {}, litRow = -1, gDrag = null;
+    let G = null, sel = [], sMode = 'pick', line = null, ptIndexOfRow = {}, ptEls = {}, litRow = -1, gDrag = null, reveal = null;
     const sModeSeg = radioGroup('s-mode', b => { sMode = b.dataset.mode; if (sMode === 'line' && !line) initLine(); renderGraph(); });
     function points() {
       const out = [];
       rows.forEach((r, i) => { const L = num(r, 'L'), y = num(r, 'T2'); if (isFinite(L) && isFinite(y) && L > 0 && y > 0) out.push({ i, L, y }); });
-      return out;
+      return reveal == null ? out : out.slice(0, reveal);
     }
     function scales(pts) {
       const maxL = Math.max(100, ...pts.map(p => p.L)), maxY = Math.max(0, ...pts.map(p => p.y));
@@ -1134,7 +1134,7 @@
         return { p1: [a.L, a.y], p2: [b.L, b.y], how: `the points at ${trim(a.L, 1)} cm and ${trim(b.L, 1)} cm` };
       }
       if (!line || line[0][0] === line[1][0]) return null;
-      return { p1: line[0], p2: line[1], how: 'two points on your line' };
+      return { p1: line[0], p2: line[1], how: 'two points on the line' };
     }
     function lightPt(i) {
       litRow = i;
@@ -1148,23 +1148,21 @@
       const pts = points(), sc = scales(pts);
       G = graphBase(gsvg, sc);
       ptIndexOfRow = {}; ptEls = {};
-      if (sMode === 'line' && line) {
-        line = line.map(([x, y]) => [clamp(x, 0, sc.xmax), clamp(y, 0, sc.ymax)]);
-      }
+      if (sMode === 'line' && line) line = line.map(([x, y]) => [clamp(x, 0, sc.xmax), clamp(y, 0, sc.ymax)]);
       const pair = currentPair();
       if (pair) {
         const S = (pair.p2[1] - pair.p1[1]) / (pair.p2[0] - pair.p1[0]), c = pair.p1[1] - S * pair.p1[0];
         lineSeg(G, G.layers.line, S, c, 0, sc.xmax, sMode === 'line' ? {} : { 'stroke-opacity': .85 });
         const d = slopeTri(G, G.layers.tri, pair.p1, pair.p2);
-        slopeOut.innerHTML = `From ${pair.how}: ΔT² = <b>${trim(Math.abs(d.dY), 3)} s²</b>, ΔL = <b>${trim(Math.abs(d.dX), 2)} cm</b>. Now work out S = ΔT² ÷ ΔL.`;
+        slopeOut.innerHTML = `From ${pair.how}: ΔT² = <b>${trim(Math.abs(d.dY), 3)} s²</b>, ΔL = <b>${trim(Math.abs(d.dX), 2)} cm</b>. Next: S = ΔT² ÷ ΔL.`;
       } else {
         slopeOut.textContent = pts.length < 2 ? 'Record or type at least two readings to plot the graph.' :
-          sMode === 'pick' ? `Click two points on the graph to use for the slope${sel.length === 1 ? ' (one chosen)' : ''}.` : 'Drag the two round handles to lay the line along your points.';
+          sMode === 'pick' ? `Click two points on the graph to use for the slope${sel.length === 1 ? ' (one chosen)' : ''}.` : 'Drag the two round handles to lay the line along the points.';
       }
       pts.forEach(p => {
         const isSel = sMode === 'pick' && sel.includes(p.i);
         const g = ptMark(G, G.layers.pts, p.L, p.y, { class: 'ptg live' + (isSel ? ' sel' : '') });
-        if (isSel) { g.querySelector('.pt-dot').setAttribute('fill', '#b8873a'); }
+        if (isSel) g.querySelector('.pt-dot').setAttribute('fill', '#b8873a');
         ptIndexOfRow[p.i] = true; ptEls[p.i] = g;
         g.addEventListener('mouseenter', () => lightPt(p.i));
         g.addEventListener('mouseleave', () => lightPt(-1));
@@ -1194,7 +1192,7 @@
     window.addEventListener('pointerup', () => { gDrag = null; });
 
     /* ---------- check ---------- */
-    const inS = $('in-s'), inG = $('in-g'), inGu = $('in-gu'), msg = $('check-msg');
+    const inS = $('in-s'), inG = $('in-g'), msg = $('check-msg'), sWork = $('s-work'), gWork = $('g-work');
     function cmsg(cls, html) { msg.className = 'check-msg ' + cls; msg.innerHTML = html; }
     function refSlope() {
       const pair = currentPair();
@@ -1202,35 +1200,35 @@
       const f = leastSq(points().map(p => [p.L, p.y]));
       return f ? { S: f.S, pair: null } : null;
     }
-    $('btn-check').addEventListener('click', () => {
+    function check() {
       const slip = rows.find(r => { const s = rowIssues(r); return s.T === 'slip10' || s.T2 === 'slip10'; });
       if (slip) { cmsg('nudge', `Check the table first: at L = ${slip.L} cm the period looks like T₁₀ itself. T = T₁₀ ÷ 10, then square it.`); return; }
       const ref = refSlope();
       if (!ref) { cmsg('nudge', 'Plot at least two readings first.'); return; }
-      const S = parseNum(inS.value), g = parseNum(inG.value), unit = inGu.value, R = ref.S;
-      if (!isFinite(S)) { cmsg('nudge', 'Enter your slope S = ΔT² ÷ ΔL first.'); return; }
+      const S = parseNum(inS.value), g = parseNum(inG.value), R = ref.S;
+      if (!isFinite(S)) { cmsg('nudge', 'Enter the slope S = ΔT² ÷ ΔL first.'); return; }
       if (!near(S, R, .04)) {
-        if (near(S, 1 / R, .06)) cmsg('nudge', 'Your slope is upside down: that is ΔL ÷ ΔT² (x over y). T² is on the y-axis, so S = ΔT² ÷ ΔL (rise over run).');
-        else if (near(S, 100 * R, .06)) cmsg('nudge', 'Your slope is 100 times the graph\'s. Did you use T₁₀ instead of T (forgetting ÷ 10)? With L in cm, S should be in s²/cm.');
-        else if (near(S, R / 100, .06)) cmsg('nudge', 'Your slope is 100 times too small. Keep L in cm (not m) and T² in s².');
-        else { const d = ref.pair ? `ΔT² = ${trim(Math.abs(ref.pair.p2[1] - ref.pair.p1[1]), 3)} s² and ΔL = ${trim(Math.abs(ref.pair.p2[0] - ref.pair.p1[0]), 2)} cm` : 'the slope of the line through your points'; cmsg('bad', `That slope doesn't match your graph. Use ${d}, and divide: S = ΔT² ÷ ΔL.`); }
+        if (near(S, 1 / R, .06)) cmsg('nudge', 'The slope is upside down: that is ΔL ÷ ΔT² (x over y). T² is on the y-axis, so S = ΔT² ÷ ΔL = (Y₂ − Y₁) / (X₂ − X₁).');
+        else if (near(S, 100 * R, .06)) cmsg('nudge', 'This slope is 100 times the graph\'s. That happens when T₁₀ is used instead of T (the ÷ 10 is missing). With L in cm, S is in s²/cm.');
+        else if (near(S, R / 100, .06)) cmsg('nudge', 'This slope is 100 times too small. Keep L in cm (not m) and T² in s².');
+        else { const d = ref.pair ? `Y₂ − Y₁ = ΔT² = ${trim(Math.abs(ref.pair.p2[1] - ref.pair.p1[1]), 3)} s² and X₂ − X₁ = ΔL = ${trim(Math.abs(ref.pair.p2[0] - ref.pair.p1[0]), 2)} cm` : 'the slope of the line through the points'; cmsg('bad', `That slope does not match the graph. Use ${d}, then divide: S = ΔT² ÷ ΔL.`); }
         return;
       }
-      if (!isFinite(g)) { cmsg('nudge', `Slope ✓. Now g = 4π² ÷ S = 39.478 ÷ ${trim(S, 5)}.`); return; }
-      const gExp = FOUR_PI2 / S, gCm = unit === 'm' ? g * 100 : g;
-      if (near(gCm, gExp, .025)) {
+      if (!isFinite(g)) { cmsg('nudge', `Slope ✓. Next: g = 4π² ÷ S = 39.478 ÷ ${trim(S, 5)}.`); return; }
+      const gExp = FOUR_PI2 / S;
+      if (near(g, gExp, .025)) {
         const diff = (gExp - G_REAL) / G_REAL * 100;
-        cmsg('ok', `✓ Correct. g = 4π² ÷ ${trim(S, 5)} ≈ <b>${gExp.toFixed(2)} cm/s²</b> = <b>${(gExp / 100).toFixed(2)} m/s²</b>. ` +
-          `The accepted value is about 980 cm/s² (9.8 m/s²); this result is ${Math.abs(diff).toFixed(1)}% ${diff >= 0 ? 'above' : 'below'} it. Hand timing over only 10 oscillations easily shifts g, most of all at the short lengths.`);
+        cmsg('ok', `✓ Correct. g = 39.478 ÷ ${trim(S, 5)} ≈ <b>${(39.478 / S).toFixed(2)} cm/s²</b>. ` +
+          (Math.abs(diff) < 1 ? 'This is within 1% of the accepted value, about 980 cm/s².' : `The accepted value is about 980 cm/s²; this result is ${Math.abs(diff).toFixed(1)}% ${diff >= 0 ? 'above' : 'below'} it. Hand timing over only 10 oscillations easily shifts g, most of all at the short lengths.`));
         return;
       }
-      if (unit === 'cm' && near(g, gExp / 100, .025)) { cmsg('nudge', `Units: ${trim(g, 3)} is the value in m/s². With L in cm, 4π² ÷ S gives cm/s². Either switch the unit to m/s² or multiply by 100.`); return; }
-      if (unit === 'm' && near(g, gExp, .025)) { cmsg('nudge', `Units: ${trim(g, 2)} is the value in cm/s² (L was in cm). To give it in m/s², divide by 100, or switch the unit to cm/s².`); return; }
-      const v = unit === 'm' ? g * 100 : g;
-      if (near(v, S / FOUR_PI2, .03) || near(v, S * FOUR_PI2, .03) || near(g, S / FOUR_PI2, .03) || near(g, S * FOUR_PI2, .03)) { cmsg('nudge', 'Divide, don\'t multiply: g = 4π² ÷ S, with 4π² on top.'); return; }
-      if ([2 * Math.PI, 4 * Math.PI, Math.PI * Math.PI, 2 * Math.PI * Math.PI, 36, 16 * Math.PI * Math.PI].some(k => near(v, k / S, .02) || near(g, k / S, .02))) { cmsg('nudge', 'Check 4π²: it is 4 × π × π ≈ 39.478.'); return; }
-      cmsg('bad', `Not quite. Work out 39.478 ÷ ${trim(S, 5)} and give the unit: cm/s² (L in cm).`);
-    });
+      if (near(g, gExp / 100, .025)) { cmsg('nudge', `Units: ${trim(g, 3)} is the value in m/s². With L in cm, 4π² ÷ S gives cm/s², so multiply by 100.`); return; }
+      if (near(g, S / FOUR_PI2, .03) || near(g, S * FOUR_PI2, .03)) { cmsg('nudge', 'Divide, do not multiply: g = 4π² ÷ S, with 4π² on top.'); return; }
+      if ([2 * Math.PI, 4 * Math.PI, Math.PI * Math.PI, 2 * Math.PI * Math.PI, 36, 16 * Math.PI * Math.PI].some(k => near(g, k / S, .02))) { cmsg('nudge', 'Check 4π²: it is 4 × π × π ≈ 39.478.'); return; }
+      cmsg('bad', `Not quite. Work out 39.478 ÷ ${trim(S, 5)}; the result is in cm/s².`);
+    }
+    $('btn-check').addEventListener('click', check);
+    [inS, inG].forEach(i => i.addEventListener('input', () => { if (!tut.on) { sWork.textContent = ''; gWork.textContent = ''; } }));
 
     /* ---------- guided calculation ---------- */
     const guide = $('guide'), btnGuide = $('btn-guide');
@@ -1238,24 +1236,23 @@
     function buildGuide() {
       const valid = rows.filter(r => isFinite(num(r, 'T10')) && num(r, 'T10') > 0 && isFinite(num(r, 'L')));
       const tLines = valid.map(r => `${trim(num(r, 'T10'), 2)} ÷ 10 = ${trim(num(r, 'T10') / 10, 3)} s`).join(' &nbsp;·&nbsp; ');
-      const t2Lines = valid.map(r => { const T = +(num(r, 'T10') / 10).toFixed(3); return `${trim(T, 3)}² = ${trim(T * T, 3)} s²`; }).join(' &nbsp;·&nbsp; ');
+      const t2Lines = valid.map(r => { const T = +(num(r, 'T10') / 10).toFixed(3); return `${trim(T, 3)}² = ${(T * T).toFixed(3)} s²`; }).join(' &nbsp;·&nbsp; ');
       const ref = refSlope();
       gSteps = [`<strong>Period:</strong> T = T₁₀ ÷ 10<span class="eq-line">${tLines || 'no T₁₀ values yet'}</span>`,
         `<strong>Square it:</strong> T² = T × T<span class="eq-line">${t2Lines || '—'}</span>`];
       if (ref && ref.pair) {
         const [a, b] = ref.pair.p1[0] <= ref.pair.p2[0] ? [ref.pair.p1, ref.pair.p2] : [ref.pair.p2, ref.pair.p1];
-        const S = (b[1] - a[1]) / (b[0] - a[0]);
-        gSteps.push(`<strong>Two points</strong> from ${ref.pair.how}:<span class="eq-line">(${trim(a[0], 2)} cm, ${trim(a[1], 3)} s²) and (${trim(b[0], 2)} cm, ${trim(b[1], 3)} s²)</span>`);
-        gSteps.push(`<strong>Slope</strong> (y over x):<span class="eq-line">S = ΔT² / ΔL = (${trim(b[1], 3)} − ${trim(a[1], 3)}) / (${trim(b[0], 2)} − ${trim(a[0], 2)}) = ${trim(b[1] - a[1], 3)} / ${trim(b[0] - a[0], 2)} = ${trim(S, 5)} s²/cm</span>`);
-        const g = FOUR_PI2 / S;
-        gSteps.push(`<strong>g</strong>:<span class="eq-line">g = 4π² / S = 39.478 / ${trim(S, 5)} = ${g.toFixed(2)} cm/s²</span>`);
-        gSteps.push(`<strong>In m/s²</strong> (÷ 100):<span class="eq-line">${g.toFixed(2)} cm/s² ÷ 100 = ${(g / 100).toFixed(2)} m/s²</span>Accepted value: about 980 cm/s² (9.8 m/s²).`);
+        const S = +((b[1] - a[1]) / (b[0] - a[0])).toPrecision(4);
+        gSteps.push(`<strong>Two points</strong> from ${ref.pair.how}:<span class="eq-line">(X₁, Y₁) = (${trim(a[0], 2)} cm, ${trim(a[1], 3)} s²) &nbsp; (X₂, Y₂) = (${trim(b[0], 2)} cm, ${trim(b[1], 3)} s²)</span>`);
+        gSteps.push(`<strong>Slope</strong> (y over x):<span class="eq-line">S = (Y₂ − Y₁) / (X₂ − X₁) = (${trim(b[1], 3)} − ${trim(a[1], 3)}) / (${trim(b[0], 2)} − ${trim(a[0], 2)}) = ${trim(b[1] - a[1], 3)} / ${trim(b[0] - a[0], 2)} = ${S} s²/cm</span>`);
+        gSteps.push('<strong>4π²</strong><span class="eq-line">4π² = 39.478</span>');
+        gSteps.push(`<strong>Acceleration due to gravity</strong><span class="eq-line">g = 4π² / S = 39.478 / ${S} = ${(39.478 / S).toFixed(2)} cm/s²</span>`);
       } else gSteps.push(sMode === 'pick' ? '<strong>Slope:</strong> click two points on the graph, then press Guided calculation again.' : '<strong>Slope:</strong> place the line on the graph first.');
     }
     function showGuide() {
       guide.innerHTML = gSteps.slice(0, gShown).map(s => `<li>${s}</li>`).join('');
       guide.hidden = gShown === 0;
-      btnGuide.textContent = gShown === 0 ? 'Guided calculation' : gShown < gSteps.length ? `Next step (${gShown + 1} of ${gSteps.length})` : 'Hide the guide';
+      btnGuide.textContent = gShown === 0 ? 'Guided calculation' : gShown < gSteps.length ? 'Next step' : 'Hide the guide';
     }
     btnGuide.addEventListener('click', () => {
       if (gShown >= gSteps.length && gShown > 0) { gShown = 0; showGuide(); return; }
@@ -1263,25 +1260,150 @@
     });
     function resetGuide() { gShown = 0; gSteps = []; showGuide(); }
 
-    /* ---------- start over + load lab values ---------- */
-    function loadLab() {
-      rows = LAB.rows.map(r => ({ L: String(r.L), T10: String(r.T10), T: String(r.T), T2: String(r.T2) }));
-      sel = [1, 2]; sMode = 'pick'; sModeSeg.set(sModeSeg.btns[0]); line = null;
-      inS.value = ''; inG.value = ''; inGu.value = 'cm'; cmsg('', ''); resetGuide();
+    /* ---------- start over ---------- */
+    function clearAll() {
+      rows = []; sel = []; line = null; sMode = 'pick'; sModeSeg.set(sModeSeg.btns[0]); reveal = null;
+      inS.value = ''; inG.value = ''; sWork.textContent = ''; gWork.textContent = ''; cmsg('', ''); resetGuide();
+      grabBob(); st.drag = null; st.th = 0; swReset(true); setL(20, false);
       renderTable(); renderGraph();
     }
-    $('btn-load').addEventListener('click', () => { loadLab(); say(swMsg, 'sw-msg', '', 'Loaded the lab readings: L = 20, 40, 60, 80 cm with T₁₀ = 10, 14, 16, 18 s.'); });
     $('btn-reset').addEventListener('click', () => {
-      rows = [20, 40, 60, 80].map(L => ({ L: String(L), T10: '', T: '', T2: '' }));
-      sel = []; line = null; sMode = 'pick'; sModeSeg.set(sModeSeg.btns[0]);
-      inS.value = ''; inG.value = ''; inGu.value = 'cm'; cmsg('', ''); resetGuide();
-      st.th = 0; st.om = 0; st.swinging = false; swReset(true); setL(20, false);
-      renderTable(); renderGraph();
-      say(rigMsg, 'rig-msg', '', 'Fresh start. Set L = 20 cm, pull the bob aside and time 10 oscillations.');
-      say(swMsg, 'sw-msg', '', 'Start the watch as the bob crosses the centre mark moving right. Each later rightward crossing is one oscillation.');
+      clearAll();
+      say(rigMsg, 'rig-msg', '', 'Fresh start. Set L, pull the bob aside and time 10 oscillations.');
+      say(swMsg, 'sw-msg', '', 'Start the watch as the bob crosses the centre mark moving right and stop it on the 10th rightward crossing. With Auto-count 10 on, each release starts the timer automatically.');
     });
 
-    setL(20, false); swReset(true); loadLab(); drawRig();
+    /* =================================================================
+       AUTOMATIC TUTORIAL — a paced demo driven by the simulation
+       ================================================================= */
+    const tut = { on: false, cancel: false, skip: false };
+    const bar = $('tut-bar'), tTitle = $('tut-title'), tText = $('tut-text'), tF = $('tut-f'), tForm = $('tut-formula'), btnTut = $('tut-start');
+    const STOP = new Error('tutorial-stop');
+    function wait(ms) {
+      return new Promise((res, rej) => {
+        const t0 = performance.now();
+        (function chk() { if (tut.cancel) return rej(STOP); if (tut.skip || performance.now() - t0 >= ms) return res(); setTimeout(chk, 25); })();
+      });
+    }
+    async function until(cond) { while (!cond()) { if (tut.cancel) throw STOP; await new Promise(r => setTimeout(r, 40)); } }
+    function step(title, text, f) { tut.skip = false; tTitle.textContent = title; tText.textContent = text; tF.innerHTML = f || ''; }
+    let hiEls = [];
+    function hi(...els) { hiEls.forEach(e => e.classList.remove('tut-hi')); hiEls = els.filter(Boolean); hiEls.forEach(e => e.classList.add('tut-hi')); }
+    async function scrollTo(elm) {
+      const r = elm.getBoundingClientRect();
+      const y = window.scrollY + r.top - Math.max(70, (window.innerHeight - Math.min(r.height, window.innerHeight - 200)) / 2 - 60);
+      window.scrollTo({ top: Math.max(0, y), behavior: tut.skip ? 'auto' : 'smooth' });
+      await wait(850);
+    }
+    async function typeInto(inp, value, perChar) {
+      inp.focus({ preventScroll: true });
+      inp.value = '';
+      for (const ch of String(value)) { inp.value += ch; inp.dispatchEvent(new Event('input', { bubbles: true })); await wait(perChar || 120); }
+      inp.blur();
+    }
+    function cell(rowIdx, f) { return tbody.querySelectorAll('tr')[rowIdx].querySelector(`input[data-f="${f}"]`); }
+    async function tutorial() {
+      tut.on = true; tut.cancel = false; document.body.classList.add('tut-on'); bar.hidden = false; btnTut.disabled = true;
+      try {
+        clearAll(); reveal = 0; setAuto(false); setL(35, false); renderGraph();
+        const rigCol = document.querySelector('.rig-col'), swPanel = $('sw-panel'), tblPanel = $('tbl-panel'), gPanel = $('graph-panel'), cPanel = $('calc-panel');
+        const results = [];
+        for (const L of [20, 40, 60, 80]) {
+          await scrollTo(document.querySelector('.prac'));
+          if (L === 20) {
+            step('Set the length', 'Slide the brass tab on the metre rule to L = 20 cm. L runs from the point of suspension to the centre of the bob.', 'L = 20 cm');
+            hi(rigCol);
+            for (let l = st.L; l >= 20; l--) { setL(l, false); await wait(70); }
+          } else {
+            const b = quick.find(x => +x.dataset.l === L);
+            step(`Next length: ${L} cm`, `Click the ${L} cm preset.`, `L = ${L} cm`);
+            hi(b); await wait(1000); setL(L, true);
+          }
+          await wait(900);
+          step('Pull the bob aside', 'Pull the bob to 10°, the edge of the small-angle zone.', 'θ = 10°');
+          hi(rigCol); grabBob(); st.drag = 'tut';
+          for (let k = 1; k <= 30; k++) { st.th = -10 * Math.PI / 180 * k / 30; drawRig(); await wait(40); }
+          await wait(600);
+          if (!sw.auto) {
+            step('Turn on Auto-count 10', 'With the toggle on, the release starts the timer, it counts 10 oscillations and then freezes.', '');
+            hi(btnAuto); await wait(1100); setAuto(true); await wait(900);
+          }
+          step('Release', 'The timer starts at release and counts each return of the bob to the release point.', '');
+          hi(swPanel); releaseBob();
+          await until(() => { if (tut.skip) st.speed = 12; return sw.frozen; });
+          st.speed = 1;
+          const T10 = +sw.acc.toFixed(2), T = +(T10 / 10).toFixed(3), T2 = (T * T).toFixed(3);
+          results.push({ L, T10, T, T2 });
+          step('Read the stopwatch', `10 oscillations at L = ${L} cm took ${T10.toFixed(2)} s.`, `T₁₀ = ${T10.toFixed(2)} s`);
+          await wait(1500);
+          // table
+          await scrollTo(tblPanel);
+          rows.push({ L: String(L), T10: '', T: '', T2: '' }); renderTable(rows.length - 1);
+          const ri = rows.length - 1;
+          tForm.hidden = false;
+          tForm.innerHTML = `L = <b>${L} cm</b>`; hi(cell(ri, 'L')); await wait(700);
+          step('Fill in T₁₀', 'Write the stopwatch reading in the T₁₀ column.', `T₁₀ = ${T10.toFixed(2)} s`);
+          tForm.innerHTML = `T₁₀ = <b>${T10.toFixed(2)} s</b> (stopwatch)`; hi(cell(ri, 'T10'));
+          await typeInto(cell(ri, 'T10'), T10.toFixed(2)); await wait(700);
+          step('Period of one oscillation', 'Divide the time for 10 oscillations by 10.', `T = T₁₀ ÷ 10 = ${T10.toFixed(2)} ÷ 10 = ${trim(T, 3)} s`);
+          tForm.innerHTML = `T = T₁₀ ÷ 10 = ${T10.toFixed(2)} ÷ 10 = <b>${trim(T, 3)} s</b>`; hi(cell(ri, 'T'));
+          await typeInto(cell(ri, 'T'), trim(T, 3)); await wait(800);
+          step('Square the period', 'T² is what goes on the y-axis.', `T² = T × T = ${trim(T, 3)}² = ${T2} s²`);
+          tForm.innerHTML = `T² = T × T = ${trim(T, 3)}² = <b>${T2} s²</b>`; hi(cell(ri, 'T2'));
+          await typeInto(cell(ri, 'T2'), T2); await wait(1100);
+          hi();
+        }
+        // graph
+        tForm.hidden = true; hi();
+        await scrollTo(gPanel);
+        step('Plot T² against L', 'Each row of the table becomes one point: L across, T² up.', '');
+        hi(gPanel);
+        for (let n = 1; n <= results.length; n++) {
+          reveal = n; renderGraph(); const r = results[n - 1];
+          tF.textContent = `(${r.L} cm, ${r.T2} s²)`;
+          await wait(1000);
+        }
+        reveal = null;
+        const f = leastSq(results.map(r => [r.L, +r.T2]));
+        const X1 = 20, X2 = 80, Y1 = +(f.S * X1 + f.c).toFixed(3), Y2 = +(f.S * X2 + f.c).toFixed(3);
+        step('Draw the best straight line', 'One straight line through the middle of the points.', '');
+        line = [[X1, Y1], [X2, Y2]]; sMode = 'line'; sModeSeg.set(sModeSeg.btns[1]); renderGraph();
+        const ln = G.layers.line.querySelector('line');
+        if (ln && ln.animate) { const len = Math.hypot(ln.x2.baseVal.value - ln.x1.baseVal.value, ln.y2.baseVal.value - ln.y1.baseVal.value); ln.style.strokeDasharray = len; ln.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: 1400, easing: 'ease-in-out' }); }
+        if (G.layers.tri.animate) G.layers.tri.animate([{ opacity: 0 }, { opacity: 0 }, { opacity: 1 }], { duration: 2200 });
+        await wait(2400);
+        step('Two points on the line', 'Read two points far apart on the line itself, not necessarily table rows.', `(X₁, Y₁) = (${X1}, ${Y1}) · (X₂, Y₂) = (${X2}, ${Y2})`);
+        await wait(2800);
+        // calculation
+        await scrollTo(cPanel);
+        const dY = +(Y2 - Y1).toFixed(3), S = +(dY / (X2 - X1)).toPrecision(4), g = (39.478 / S).toFixed(2);
+        step('Slope', 'S = ΔT² / ΔL, worked as (Y₂ − Y₁) / (X₂ − X₁) with Y = T² and X = L.', `S = (${Y2} − ${Y1}) / (${X2} − ${X1}) = ${dY} / ${X2 - X1} = ${S} s²/cm`);
+        hi($('cr-s'));
+        sWork.textContent = `= (${Y2} − ${Y1}) / (${X2} − ${X1}) = ${dY} / ${X2 - X1} = ${S}`;
+        await wait(1200); await typeInto(inS, String(S)); await wait(1200);
+        step('4π²', 'The constant in the formula.', '4π² = 4 × π × π = 39.478');
+        hi($('cr-4pi')); await wait(2200);
+        step('Acceleration due to gravity', 'Divide 4π² by the slope.', `g = 4π² / S = 39.478 / ${S} = ${g} cm/s²`);
+        hi($('cr-g'));
+        gWork.textContent = `= 39.478 / ${S} = ${g}`;
+        await wait(1200); await typeInto(inG, g); await wait(1000);
+        hi($('btn-check')); await wait(700); check(); hi();
+        step('Done', `g ≈ ${g} cm/s² from simulated readings with g = 980 cm/s². Start over to take readings by hand.`, '');
+        await wait(4500);
+      } catch (e) {
+        if (e !== STOP) throw e;
+      } finally {
+        tut.on = false; tut.skip = false; st.speed = 1; reveal = null; hi(); tForm.hidden = true;
+        if (st.drag === 'tut') st.drag = null;
+        document.body.classList.remove('tut-on'); bar.hidden = true; btnTut.disabled = false;
+        renderGraph();
+      }
+    }
+    btnTut.addEventListener('click', () => { if (!tut.on) tutorial(); });
+    $('tut-stop').addEventListener('click', () => { tut.cancel = true; });
+    $('tut-skip').addEventListener('click', () => { tut.skip = true; });
+
+    setL(20, false); swReset(true); renderTable(); drawRig();
   })();
 
   /* =====================================================================
