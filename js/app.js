@@ -1386,6 +1386,7 @@
     function cell(rowIdx, f) { return tbody.querySelectorAll('tr')[rowIdx].querySelector(`input[data-f="${f}"]`); }
     async function tutorial() {
       tut.on = true; tut.cancel = false; document.body.classList.add('tut-on'); bar.hidden = false; btnTut.disabled = true;
+      lockSlow(true);
       try {
         clearAll(); reveal = 0; setAuto(false); setL(35, false); renderGraph();
         const rigCol = document.querySelector('.rig-col'), swPanel = $('sw-panel'), tblPanel = $('tbl-panel'), gPanel = $('graph-panel'), cPanel = $('calc-panel');
@@ -1478,8 +1479,15 @@
         tut.on = false; tut.skip = false; st.speed = 1; reveal = null; hi(); tForm.hidden = true;
         if (st.drag === 'tut') st.drag = null;
         document.body.classList.remove('tut-on'); bar.hidden = true; btnTut.disabled = false;
+        lockSlow(false);
         renderGraph();
       }
+    }
+    const slowIn = $('p-slow'), slowLab = slowIn.closest('label');
+    function lockSlow(on) {           // slow motion is unavailable while the tutorial runs
+      if (on) { slowIn.checked = false; st.slow = false; }
+      slowIn.disabled = on; slowLab.classList.toggle('is-off', on);
+      if (on) slowLab.title = 'Unavailable during the tutorial'; else slowLab.removeAttribute('title');
     }
     btnTut.addEventListener('click', () => { if (!tut.on) tutorial(); });
     $('tut-stop').addEventListener('click', () => { tut.cancel = true; });
