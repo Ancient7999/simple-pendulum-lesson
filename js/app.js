@@ -2,6 +2,11 @@
 (function () {
   'use strict';
 
+  /* tutorial clock: virtual milliseconds that stop while paused and run faster at higher speed */
+  const TC = { speed: 1, paused: false, base: 0, at: performance.now() };
+  function tnow() { const n = performance.now(); if (!TC.paused) TC.base += (n - TC.at) * TC.speed; TC.at = n; return TC.base; }
+  function tcSet(o) { tnow(); Object.assign(TC, o); }
+
   /* =====================================================================
      1. CONSTANTS + HELPERS
      ===================================================================== */
@@ -800,7 +805,7 @@
      12. PRACTICAL — front view, cm scale on the stand rod behind the string
      ===================================================================== */
   (function practical() {
-    const st = { L: 20, slow: false, th: 0, om: 0, simT: 0, drag: null, swinging: false, speed: 1 };
+    const st = { L: 20, slow: false, th: 0, om: 0, simT: 0, acc: 0, drag: null, swinging: false, speed: 1 };
 
     /* ---------- rig drawing: looking straight at the stand, rod behind the string ---------- */
     const svg = $('rig'); const defs = bobDefs(svg, 'rg');
@@ -920,8 +925,8 @@
         angLab.setAttribute('fill', Math.abs(deg) > 10.5 ? '#b24a37' : '#2b6a57');
       } else angLab.textContent = '';
     }
-    let markFlash = 0;
-    function flashMark() { markBar.setAttribute('fill', '#2b6a57'); clearTimeout(markFlash); markFlash = setTimeout(() => markBar.setAttribute('fill', '#b8873a'), 180); }
+    let markFlashAt = 0;
+    function flashMark() { markBar.setAttribute('fill', '#2b6a57'); markFlashAt = tnow() + 180; }
 
     /* ---------- messages ---------- */
     const rigMsg = $('rig-msg'), swMsg = $('sw-msg');
@@ -1005,7 +1010,7 @@
       const d = Math.abs(st.th * 180 / Math.PI);
       st.drag = null;
       if (d < 1) { st.th = 0; say(rigMsg, 'rig-msg', '', 'Pull the bob a little further aside, about 5° to 8°.'); drawRig(); return; }
-      st.swinging = true;
+      st.swinging = true; st.acc = 0;
       if (d > 10.5) {
         const pct = ((periodOf(1, 1, st.th) / (2 * Math.PI)) - 1) * 100;
         say(rigMsg, 'rig-msg', 'warn', `Released at ${d.toFixed(0)}°, which is too large. T = 2π√(L/g) holds only for small angles (under about 10°); here the period runs about ${pct.toFixed(1)}% long. Stop the bob and release it from a smaller angle.`);
@@ -1086,10 +1091,14 @@
     let raf = 0, last = 0, active = false;
     function loop(now) {
       const real = Math.min(.05, (now - last) / 1000); last = now;
-      const dt = real * (st.slow ? .25 : 1) * st.speed;
+      const rate = tut.on ? (TC.paused ? 0 : TC.speed) : 1;   // the tutorial clock drives simulation time
+      const dt = real * (st.slow ? .25 : 1) * st.speed * rate;
       if (st.swinging && !st.drag) {
-        const k = G_REAL / st.L, n = Math.max(1, Math.ceil(dt / .002)), h = dt / n;
-        for (let i = 0; i < n; i++) {
+        // fixed simulation steps from the release, so timings do not depend on frame rate or playback speed
+        const k = G_REAL / st.L, h = .002;
+        st.acc += dt;
+        while (st.acc >= h) {
+          st.acc -= h;
           const th0 = st.th, om0 = st.om, t0 = st.simT;
           rk4(st, h, k, .006); st.simT += h;
           const cross = th0 < 0 && st.th >= 0 && st.om > 0;
@@ -1098,8 +1107,9 @@
           if (sw.autoRun) { if (om0 !== 0 && om0 * st.om < 0 && Math.sign(st.th) === sw.relSign) onReturn(t0 + h * om0 / (om0 - st.om)); }
           else if (cross) onCrossing();
         }
-      } else st.simT += dt;
+      } else { st.simT += dt; st.acc = 0; }
       drawRig(); swShow();
+      if (markFlashAt && tnow() >= markFlashAt) { markFlashAt = 0; markBar.setAttribute('fill', '#b8873a'); }
       if (active) raf = requestAnimationFrame(loop);
     }
     onEnter.practical = () => { if (!active) { active = true; last = performance.now(); raf = requestAnimationFrame(loop); } requestAnimationFrame(renderGraph); };
@@ -1359,12 +1369,38 @@
        AUTOMATIC TUTORIAL — a paced demo driven by the simulation
        ================================================================= */
     const tut = { on: false, cancel: false, skip: false };
+    const btnPause = $('tut-pause'), selSpeed = $('tut-speed');
+    let pausedAnims = [];
+    function setPaused(p) {
+      tcSet({ paused: p });
+      btnPause.classList.toggle('paused', p); btnPause.setAttribute('aria-pressed', p ? 'true' : 'false');
+      btnPause.querySelector('.tl').textContent = p ? 'Resume' : 'Pause';
+      btnPause.title = p ? 'Resume' : 'Pause';
+      document.body.classList.toggle('tut-paused', p);
+      if (p) { pausedAnims = document.getAnimations().filter(a => a.playState === 'running'); pausedAnims.forEach(a => a.pause()); }
+      else { pausedAnims.forEach(a => { try { a.play(); } catch (_) { /* finished */ } }); pausedAnims = []; }
+    }
+    function resetPlayback() { setPaused(false); tcSet({ speed: 1 }); selSpeed.value = '1'; }
+    btnPause.addEventListener('click', () => { if (tut.on) setPaused(!TC.paused); });
+    selSpeed.addEventListener('change', () => { tcSet({ speed: +selSpeed.value || 1 }); });
+    function tScroll(y) {
+      return new Promise(res => {
+        const y0 = window.scrollY, t0 = tnow(), ms = Math.min(900, 250 + Math.abs(y - y0) * .5);
+        (function f() {
+          if (tut.cancel) return res();
+          let k = Math.min(1, (tnow() - t0) / ms); if (tut.skip) k = 1;
+          const e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+          window.scrollTo({ top: y0 + (y - y0) * e, behavior: 'instant' });
+          if (k < 1) requestAnimationFrame(f); else res();
+        })();
+      });
+    }
     const bar = $('tut-bar'), tTitle = $('tut-title'), tText = $('tut-text'), tF = $('tut-f'), tForm = $('tut-formula'), btnTut = $('tut-start');
     const STOP = new Error('tutorial-stop');
     function wait(ms) {
       return new Promise((res, rej) => {
-        const t0 = performance.now();
-        (function chk() { if (tut.cancel) return rej(STOP); if (tut.skip || performance.now() - t0 >= ms) return res(); setTimeout(chk, 25); })();
+        const t0 = tnow();
+        (function chk() { if (tut.cancel) return rej(STOP); if (tut.skip || tnow() - t0 >= ms) return res(); setTimeout(chk, 25); })();
       });
     }
     async function until(cond) { while (!cond()) { if (tut.cancel) throw STOP; await new Promise(r => setTimeout(r, 40)); } }
@@ -1374,7 +1410,7 @@
     async function scrollTo(elm) {
       const r = elm.getBoundingClientRect();
       const y = window.scrollY + r.top - Math.max(70, (window.innerHeight - Math.min(r.height, window.innerHeight - 200)) / 2 - 60);
-      window.scrollTo({ top: Math.max(0, y), behavior: tut.skip ? 'auto' : 'smooth' });
+      tScroll(Math.max(0, y));
       await wait(850);
     }
     async function typeInto(inp, value, perChar) {
@@ -1452,8 +1488,8 @@
         step('Draw the best straight line', 'One straight line through the middle of the points.', '');
         line = [[X1, Y1], [X2, Y2]]; sMode = 'line'; sModeSeg.set(sModeSeg.btns[1]); renderGraph();
         const ln = G.layers.line.querySelector('line');
-        if (ln && ln.animate) { const len = Math.hypot(ln.x2.baseVal.value - ln.x1.baseVal.value, ln.y2.baseVal.value - ln.y1.baseVal.value); ln.style.strokeDasharray = len; ln.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: 1400, easing: 'ease-in-out' }); }
-        if (G.layers.tri.animate) G.layers.tri.animate([{ opacity: 0 }, { opacity: 0 }, { opacity: 1 }], { duration: 2200 });
+        if (ln && ln.animate) { const len = Math.hypot(ln.x2.baseVal.value - ln.x1.baseVal.value, ln.y2.baseVal.value - ln.y1.baseVal.value); ln.style.strokeDasharray = len; ln.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], { duration: 1400, easing: 'ease-in-out' }).playbackRate = TC.speed; }
+        if (G.layers.tri.animate) G.layers.tri.animate([{ opacity: 0 }, { opacity: 0 }, { opacity: 1 }], { duration: 2200 }).playbackRate = TC.speed;
         await wait(2400);
         step('Two points on the line', 'Read two points far apart on the line itself, not necessarily table rows.', `(X₁, Y₁) = (${X1}, ${Y1}) · (X₂, Y₂) = (${X2}, ${Y2})`);
         await wait(2800);
@@ -1476,7 +1512,7 @@
       } catch (e) {
         if (e !== STOP) throw e;
       } finally {
-        tut.on = false; tut.skip = false; st.speed = 1; reveal = null; hi(); tForm.hidden = true;
+        tut.on = false; tut.skip = false; st.speed = 1; resetPlayback(); reveal = null; hi(); tForm.hidden = true;
         if (st.drag === 'tut') st.drag = null;
         document.body.classList.remove('tut-on'); bar.hidden = true; btnTut.disabled = false;
         lockSlow(false);
