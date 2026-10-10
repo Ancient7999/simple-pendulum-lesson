@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simple Pendulum · Determining g</title>
+<meta name="description" content="Simple pendulum practical: determine the acceleration due to gravity g from a T² against L graph. Aim, theory, method, worked result, interactive graph, MCQs and an immersive practical.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23eef2f0'/%3E%3Cpath d='M6 6h20' stroke='%231d2a2e' stroke-width='2.4' stroke-linecap='round'/%3E%3Cpath d='M16 6l5 15' stroke='%232b6a57' stroke-width='1.6'/%3E%3Ccircle cx='21.5' cy='22.5' r='4.6' fill='%23b8873a'/%3E%3C/svg%3E">
+<link rel="preload" href="fonts/InstrumentSerif-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/HankenGrotesk-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/fonts.css">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<canvas id="bg" aria-hidden="true"></canvas>
+
+<div id="cursor" aria-hidden="true">
+  <svg viewBox="-30 -6 60 60" width="60" height="60"><circle class="cu-pivot-ring" cx="0" cy="0" r="5"/><circle class="cu-pivot" cx="0" cy="0" r="2.4"/><g id="cu-arm"><line class="cu-string" x1="0" y1="0" x2="0" y2="26"/><circle class="cu-bob" cx="0" cy="30" r="5.4"/><circle class="cu-shine" cx="-1.8" cy="28" r="1.5"/></g></svg>
+</div>
+
+<div class="app">
+  <aside class="rail" aria-label="Lesson progress">
+    <div class="rail-brand">
+      <div class="rail-eyebrow">Physics practical</div>
+      <div class="rail-title">Simple pendulum</div>
+      <div class="rail-sub">determining g</div>
+    </div>
+    <div class="rail-body">
+      <div class="rail-plumb" aria-hidden="true"><div class="rail-line" id="rail-line"></div><div class="rail-bob" id="rail-bob"></div></div>
+      <nav class="rail-nav" id="rail-nav" aria-label="Sections"></nav>
+    </div>
+  </aside>
+
+  <main class="stage" id="stage">
+    <div class="stage-top">
+      <button type="button" class="btn-prev" id="btn-prev">← Prev</button>
+    </div>
+
+    <!-- ============ AIM & OUTCOMES ============ -->
+    <section class="view" id="view-aim" data-title="Aim &amp; outcomes">
+      <div class="sheet">
+        <p class="disclaimer">This lesson is an AI-assisted introduction, not scientific-grade material. Use it to build a working picture before the lecture and the lab session, and follow your lab manual and instructor where they differ.</p>
+        <p class="eyebrow">Physics practical · Simple pendulum</p>
+        <h1 class="page-h">Acceleration due to gravity with a simple pendulum</h1>
+        <div class="aim-grid">
+          <div>
+            <div class="aim-block">
+              <div class="aim-label">Aim</div>
+              <p class="aim-text">To determine the acceleration due to gravity, <i>g</i>, using a simple pendulum.</p>
+            </div>
+            <h2 class="sub-h">Learning outcomes</h2>
+            <p class="lede">By the end of this session you should be able to:</p>
+            <ul class="outcomes">
+              <li>Determine the acceleration due to gravity using a simple pendulum.</li>
+              <li>Record the quantity that depends on gravity: the period of oscillation, and how it changes with length.</li>
+              <li>Represent data graphically and analyse experimental error.</li>
+            </ul>
+          </div>
+          <figure class="aim-figure">
+            <svg id="aim-hero" viewBox="0 0 300 400" role="img" aria-label="A pendulum bob swinging from a clamp on a retort stand"></svg>
+          </figure>
+        </div>
+        <h2 class="sub-h">Why it matters in medicine</h2>
+        <div class="med-row">
+          <div class="med"><svg viewBox="0 0 80 80" aria-hidden="true" class="med-ic" id="med-ic-1"></svg><div><h3>Periodic motion in the body</h3><p>A swinging leg during walking behaves much like a pendulum. Its natural period helps explain a comfortable walking pace.</p></div></div>
+          <div class="med"><svg viewBox="0 0 80 80" aria-hidden="true" class="med-ic" id="med-ic-2"></svg><div><h3>Rehabilitation timing</h3><p>Therapists use steady rhythms, sometimes paced by a pendulum or metronome, to time repetitive exercises.</p></div></div>
+          <div class="med"><svg viewBox="0 0 80 80" aria-hidden="true" class="med-ic" id="med-ic-3"></svg><div><h3>Biological rhythms</h3><p>Heartbeat, breathing and gait are repeating cycles. The ideas of period and frequency used here are how we describe them.</p></div></div>
+        </div>
+        <div class="page-end"><button type="button" class="btn-next" data-next>Next →</button></div>
+      </div>
+    </section>
+
+    <!-- ============ THEORY ============ -->
+    <section class="view" id="view-theory" data-title="Theory">
+      <div class="sheet">
+        <h1 class="page-h">Theory</h1>
+        <p class="lede">A <strong>simple pendulum</strong> is a small, heavy bob hanging from a fixed point on a light, inextensible string. Pulled a little to one side and released, it swings to and fro about its lowest point, the <strong>mean position</strong>.</p>
+
+        <div class="terms">
+          <div class="term"><div class="term-k">Length L</div><p>From the point of suspension to the <strong>centre of the bob</strong>.</p></div>
+          <div class="term"><div class="term-k">One oscillation</div><p>A full to-and-fro swing: from one side, across to the other, and back again.</p></div>
+          <div class="term"><div class="term-k">Period T</div><p>The time for one oscillation, in seconds.</p></div>
+          <div class="term"><div class="term-k">Amplitude</div><p>How far the bob is pulled aside. Keep the angle small, under 10°.</p></div>
+        </div>
+
+        <h2 class="sub-h">The forces on the bob</h2>
+        <div class="force-row">
+          <svg id="force-svg" viewBox="0 0 360 400" role="img" aria-label="Force diagram: the weight mg splits into mg cos theta along the string and mg sin theta along the arc"></svg>
+          <div class="force-text">
+            <p>The weight <b>mg</b> splits into two parts. Along the string, <b>mg cos θ</b> is balanced by the tension <b>T</b>. Along the arc, <b>mg sin θ</b> pulls the bob back towards the mean position: this is the <strong>restoring force</strong>.</p>
+            <div class="ctl">
+              <label for="th-slider"><span>Angle θ</span> <output id="th-o">8°</output></label>
+              <input type="range" id="th-slider" min="0" max="40" step="1" value="8">
+            </div>
+            <div class="small-angle" id="small-angle"></div>
+          </div>
+        </div>
+
+        <h2 class="sub-h">From the force to the formula</h2>
+        <ol class="deriv-steps">
+          <li>For a small angle, sin θ ≈ θ (in radians), and θ = x / L, where x is the distance along the arc. So the restoring force is<span class="eq-line">F = −mg sin θ ≈ −(mg / L) x</span></li>
+          <li>Dividing by m gives the acceleration:<span class="eq-line">a = −(g / L) x</span>Acceleration proportional to displacement and directed back to the centre: this is <strong>simple harmonic motion</strong>, with ω² = g / L.</li>
+          <li>The period of SHM is T = 2π / ω, so<span class="eq-line big">T = 2π √(L / g)</span></li>
+          <li>Square both sides:<span class="eq-line big">T² = (4π² / g) L</span></li>
+        </ol>
+
+        <div class="line-card">
+          <div class="lc-eq"><span class="lc-y">T²</span> = <span class="lc-m">(4π² / g)</span> · <span class="lc-x">L</span></div>
+          <div class="lc-eq dim"><span class="lc-y">y</span> = <span class="lc-m">S</span> · <span class="lc-x">x</span></div>
+          <p>Plot <b class="c-y">T² on the y-axis</b> against <b class="c-x">L on the x-axis</b>: the points lie on a straight line through the origin. Its slope is <b class="c-m">S = 4π² / g</b>, so</p>
+          <p class="lc-result">g = 4π² / S</p>
+        </div>
+
+        <h2 class="sub-h">What does the period depend on?</h2>
+        <p class="lede">Pendulum A stays fixed. Change pendulum B and release both together.</p>
+        <div class="compare">
+          <div class="cmp-stage"><svg id="cmp-svg" viewBox="0 0 520 330" role="img" aria-label="Two pendulums side by side, A and B"></svg>
+            <div class="cmp-read"><div><span class="cr-k">A</span> T = <b id="cmp-ta">—</b></div><div><span class="cr-k b">B</span> T = <b id="cmp-tb">—</b></div></div>
+          </div>
+          <div class="cmp-controls">
+            <div class="ctl"><label for="cmp-l"><span>Length of B</span> <output id="cmp-l-o"></output></label><input type="range" id="cmp-l" min="20" max="100" step="1" value="60"></div>
+            <div class="ctl"><label for="cmp-m"><span>Mass of B</span> <output id="cmp-m-o"></output></label><input type="range" id="cmp-m" min="20" max="200" step="5" value="50"></div>
+            <div class="ctl"><label for="cmp-a"><span>Release angle of B</span> <output id="cmp-a-o"></output></label><input type="range" id="cmp-a" min="2" max="40" step="1" value="8"></div>
+            <div class="ctl"><span class="ctl-label">Gravity for B</span>
+              <div class="seg" id="cmp-g" role="radiogroup" aria-label="Gravity for pendulum B">
+                <button type="button" role="radio" aria-checked="true" data-g="980">Earth 980</button>
+                <button type="button" role="radio" aria-checked="false" data-g="371">Mars 371</button>
+                <button type="button" role="radio" aria-checked="false" data-g="162">Moon 162</button>
+              </div>
+            </div>
+            <button type="button" class="btn-main" id="cmp-go">Release both</button>
+            <p class="cmp-msg" id="cmp-msg" aria-live="polite"></p>
+          </div>
+        </div>
+        <p class="note">g values in cm/s². A is 60 cm long, 50 g, released at 8°, on Earth.</p>
+        <div class="page-end"><button type="button" class="btn-next" data-next>Next →</button></div>
+      </div>
+    </section>
+
+    <!-- ============ METHOD ============ -->
+    <section class="view" id="view-method" data-title="Method">
+      <div class="sheet wide">
+        <h1 class="page-h">Method</h1>
+        <h2 class="sub-h first">Apparatus</h2>
+        <div class="app-grid" id="app-grid"></div>
+
+        <h2 class="sub-h">Steps</h2>
+        <div class="method-wrap">
+          <ol class="steps" id="steps">
+            <li><button type="button" class="step" aria-pressed="true"><span class="sn">1</span><span>Set up the pendulum: clamp the string firmly in the stand so the bob hangs freely.</span></button></li>
+            <li><button type="button" class="step"><span class="sn">2</span><span>Measure the length L from the point of suspension to the centre of the bob.</span></button></li>
+            <li><button type="button" class="step"><span class="sn">3</span><span>Reset the stopwatch to zero.</span></button></li>
+            <li><button type="button" class="step"><span class="sn">4</span><span>Pull the bob aside to a small angle (under 10°) and release it. Time 10 complete oscillations.</span></button></li>
+            <li><button type="button" class="step"><span class="sn">5</span><span>Repeat for L = 20, 40, 60 and 80 cm. For each, T = T<sub>10</sub> ÷ 10.</span></button></li>
+            <li><button type="button" class="step"><span class="sn">6</span><span>Plot T² (y-axis) against L (x-axis), draw the best straight line and find its slope S.</span></button></li>
+            <li><button type="button" class="step"><span class="sn">7</span><span>Calculate g = 4π² / S.</span></button></li>
+          </ol>
+          <div class="step-view">
+            <div class="step-fig" id="step-fig"></div>
+            <p class="step-cap" id="step-cap"></p>
+          </div>
+        </div>
+
+        <aside class="tips">
+          <div class="tips-label">Good practice</div>
+          <ul>
+            <li><strong>Small angle.</strong> T = 2π√(L/g) assumes sin θ ≈ θ. Above about 10° the true period gets noticeably longer.</li>
+            <li><strong>Measure to the centre of the bob.</strong> L = string length (from the clamp) + radius of the bob.</li>
+            <li><strong>Time at the mean position.</strong> The bob moves fastest there, so the moment it passes is sharpest. Start the watch as it passes and count "zero", then count each return in the same direction.</li>
+            <li><strong>Swing in one plane.</strong> Release gently without pushing, so the bob does not trace an ellipse.</li>
+            <li><strong>Time many oscillations.</strong> Your reaction error (about 0.2 s) is shared over all of them. Over 10 oscillations it is 0.02 s per period; over 20, only 0.01 s.</li>
+          </ul>
+        </aside>
+        <div class="page-end"><button type="button" class="btn-next" data-next>Next →</button></div>
+      </div>
+    </section>
+
+    <!-- ============ FORMULA & RESULTS ============ -->
+    <section class="view" id="view-results" data-title="Formula &amp; results">
+      <div class="sheet">
+        <h1 class="page-h">Formula &amp; results</h1>
+        <div class="formula-card">
+          <div class="big-eq" aria-label="g equals four pi squared over S">
+            <span class="v">g</span><span class="op">=</span><span class="frac"><span>4π²</span><span class="v">S</span></span>
+          </div>
+          <dl class="legend">
+            <div><dt>g</dt><dd>acceleration due to gravity, in cm/s² when L is in cm</dd></div>
+            <div><dt>S</dt><dd>slope of the T² (y) against L (x) graph, in s²/cm</dd></div>
+            <div><dt>4π²</dt><dd>= 39.478 (π² ≈ 9.8696)</dd></div>
+            <div><dt>T</dt><dd>period, T = T<sub>10</sub> ÷ 10</dd></div>
+          </dl>
+        </div>
+
+        <h2 class="sub-h">Observation table</h2>
+        <p class="lede">The worked example uses a real set of readings from this lab.</p>
+        <div class="table-wrap">
+          <table class="obs" id="res-table">
+            <thead><tr><th>L<span class="u">cm</span></th><th>T<sub>10</sub><span class="u">s</span></th><th>T = T<sub>10</sub> ÷ 10<span class="u">s</span></th><th>T²<span class="u">s²</span></th></tr></thead>
+            <tbody>
+              <tr><td>20</td><td>10</td><td>1</td><td>1</td></tr>
+              <tr><td>40</td><td>14</td><td>1.4</td><td>1.96</td></tr>
+              <tr><td>60</td><td>16</td><td>1.6</td><td>2.56</td></tr>
+              <tr><td>80</td><td>18</td><td>1.8</td><td>3.24</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 class="sub-h">Calculation</h2>
+        <div class="calc">
+          <div class="calc-step"><span class="cs-n">1</span><div><strong>Period from 10 oscillations</strong>
+            <span class="eq-line">T = T<sub>10</sub> ÷ 10, e.g. 14 ÷ 10 = <b>1.4 s</b></span></div></div>
+          <div class="calc-step"><span class="cs-n">2</span><div><strong>Square it</strong>
+            <span class="eq-line">T² = 1.4² = <b>1.96 s²</b></span></div></div>
+          <div class="calc-step hi"><span class="cs-n">3</span><div><strong>Slope</strong> (y = T², x = L): rise over run
+            <span class="eq-line">S = ΔT² / ΔL = (2.56 − 1.96) / (60 − 40) = 0.60 / 20 = <b>0.03 s²/cm</b></span></div></div>
+          <div class="calc-step"><span class="cs-n">4</span><div><strong>Substitute</strong>
+            <span class="eq-line">g = 4π² / S = 4π² / 0.03 = 39.478 / 0.03 = 1315.947</span></div></div>
+          <div class="calc-step result"><span class="cs-n">✓</span><div><strong>Result</strong>
+            <span class="eq-line big">Acceleration due to gravity g ≈ <b>1315.95 cm/s²</b></span>
+            <span class="sub">= 13.16 m/s²</span></div></div>
+        </div>
+
+        <h2 class="sub-h">cm/s² or m/s²?</h2>
+        <div class="units">
+          <div class="unit-box"><div class="ub-k">L in cm, so S in s²/cm</div><div class="ub-v">g comes out in <b>cm/s²</b></div></div>
+          <div class="unit-arrow" aria-hidden="true">÷ 100</div>
+          <div class="unit-box"><div class="ub-k">100 cm = 1 m</div><div class="ub-v">g in <b>m/s²</b></div></div>
+        </div>
+        <p class="units-eq">1315.95 cm/s² ÷ 100 = <b>13.16 m/s²</b> &nbsp;·&nbsp; 980 cm/s² ÷ 100 = <b>9.8 m/s²</b></p>
+
+        <div class="neutral-note">
+          <p>The accepted value is about <b>980 cm/s²</b> (9.8 m/s²). Periods timed by hand over only 10 oscillations can shift the result, and a timing error matters most at short lengths: at L = 20 cm, being 0.2 s off on T<sub>10</sub> changes T² by about 4%, while at 80 cm the same slip changes it by about 2%.</p>
+        </div>
+
+        <h2 class="sub-h">Common slips</h2>
+        <div class="slips">
+          <div class="slip"><h3>Forgetting ÷ 10</h3><p>T<sub>10</sub> is the time for ten swings. Squaring 14 instead of 1.4 gives 196 instead of 1.96: every T² is 100 times too big, and g comes out 100 times too small.</p></div>
+          <div class="slip"><h3>Slope upside down</h3><p>T² is on the y-axis, so S = ΔT² / ΔL. Taking ΔL / ΔT² = 20 / 0.60 = 33.3 would give g = 1.18, which is far off.</p></div>
+          <div class="slip"><h3>Mixing units</h3><p>With L in cm the answer is in cm/s². Comparing 1315.95 with 9.8 directly mixes cm and m. Divide by 100 first, or compare with 980.</p></div>
+          <div class="slip"><h3>Plotting T, not T²</h3><p>T against L is a curve. Only T² against L is a straight line whose slope is 4π² / g.</p></div>
+        </div>
+        <div class="page-end"><button type="button" class="btn-next" data-next>Next →</button></div>
+      </div>
+    </section>
+
+    <!-- ============ GRAPH ============ -->
+    <section class="view" id="view-graph" data-title="Graph">
+      <div class="sheet wide">
+        <h1 class="page-h">The T² against L graph</h1>
+        <p class="lede">Point at a reading on the graph or in the table to see its values. Then compare slopes taken different ways.</p>
+        <div class="gp-wrap">
+          <div class="graph-wrap"><svg id="g-graph" class="graph" viewBox="0 0 760 540" role="img" aria-label="Graph of T squared against L with four readings"></svg></div>
+          <div class="gp-side">
+            <table class="obs small hov" id="g-table">
+              <thead><tr><th>L<span class="u">cm</span></th><th>T²<span class="u">s²</span></th></tr></thead>
+              <tbody></tbody>
+            </table>
+            <div class="ctl"><span class="ctl-label">Slope from</span>
+              <div class="seg vert" id="g-mode" role="radiogroup" aria-label="Slope from">
+                <button type="button" role="radio" aria-checked="true" data-mode="lab">Points at 40 and 60 cm</button>
+                <button type="button" role="radio" aria-checked="false" data-mode="ends">Points at 20 and 80 cm</button>
+                <button type="button" role="radio" aria-checked="false" data-mode="fit">Best-fit line (least squares)</button>
+              </div>
+            </div>
+            <label class="chk"><input type="checkbox" id="g-ref"> Show the line for g = 980 cm/s²</label>
+            <div class="g-read" id="g-read" aria-live="polite"></div>
+          </div>
+        </div>
+        <p class="note">The lab book used the points at 40 and 60 cm, giving S = 0.03 s²/cm and g ≈ 1315.95 cm/s². A slope from points far apart, or from a best-fit line, uses more of the data.</p>
+        <div class="page-end"><button type="button" class="btn-next" data-next>Next →</button></div>
+      </div>
+    </section>
+
+    <!-- ============ MCQs ============ -->
+    <section class="view" id="view-mcq" data-title="MCQs">
+      <div class="sheet">
+        <h1 class="page-h">Check your understanding</h1>
+        <div class="mcq-bar">
+          <div class="mcq-score" id="mcq-score">0 correct</div>
+          <button type="button" class="btn-quiet" id="mcq-reset">Reset &amp; reshuffle</button>
+        </div>
+        <ol class="mcq-list" id="mcq-list"></ol>
+        <div class="page-end"><button type="button" class="btn-next" data-next>Next →</button></div>
+      </div>
+    </section>
+
+    <!-- ============ PRACTICAL ============ -->
+    <section class="view" id="view-practical" data-title="Practical">
+      <div class="sheet wide">
+        <h1 class="page-h">Practical</h1>
+        <p class="lede">Set the length on the ruler, pull the bob aside and let go. Time 10 oscillations, record them, then find the slope of T² against L and work out g.</p>
+
+        <div class="prac">
+          <div class="rig-col">
+            <div class="rig-frame" id="rig-frame">
+              <svg id="rig" viewBox="0 0 520 720" role="img" aria-label="Pendulum on a retort stand with a metre rule beside it"></svg>
+            </div>
+            <div class="rig-msg" id="rig-msg" aria-live="polite">Drag the brass slider on the ruler to set L, then pull the bob sideways and let go.</div>
+          </div>
+
+          <div class="prac-work">
+            <div class="panel">
+              <h2 class="panel-h">Pendulum</h2>
+              <div class="ctl">
+                <label for="p-len"><span>Length L</span> <output id="p-len-o">20 cm</output></label>
+                <input type="range" id="p-len" min="10" max="100" step="1" value="20">
+              </div>
+              <div class="quick" id="p-quick" aria-label="Quick lengths">
+                <button type="button" data-l="20">20</button><button type="button" data-l="40">40</button><button type="button" data-l="60">60</button><button type="button" data-l="80">80</button><span class="quick-u">cm</span>
+              </div>
+              <div class="ctl">
+                <span class="ctl-label">Physics</span>
+                <div class="seg" id="p-mode" role="radiogroup" aria-label="Physics mode">
+                  <button type="button" role="radio" aria-checked="true" data-mode="real">Real (g = 980 cm/s²)</button>
+                  <button type="button" role="radio" aria-checked="false" data-mode="lab">Lab mode (your times)</button>
+                </div>
+              </div>
+              <div class="p-row">
+                <label class="chk"><input type="checkbox" id="p-slow"> Slow motion ×¼</label>
+                <button type="button" class="btn-quiet" id="p-stop">Stop the bob</button>
+              </div>
+            </div>
+
+            <div class="panel">
+              <h2 class="panel-h">Stopwatch</h2>
+              <div class="sw-row">
+                <div class="stopwatch" id="stopwatch"><span id="sw-val">0.00</span><small>s</small></div>
+                <div class="counter" id="counter"><div class="ct-num"><span id="ct-val">0</span><small>/ 10</small></div><div class="ct-lab">oscillations</div><div class="ct-dots" id="ct-dots"></div></div>
+              </div>
+              <div class="sw-actions">
+                <button type="button" class="btn-main" id="sw-start">Start <kbd>Space</kbd></button>
+                <button type="button" class="btn-quiet" id="sw-reset">Reset</button>
+                <button type="button" class="btn-quiet" id="sw-auto">Auto-count 10</button>
+              </div>
+              <button type="button" class="btn-record" id="sw-record">Record T<sub>10</sub> for L = <span id="rec-l">20</span> cm</button>
+              <p class="sw-msg" id="sw-msg" aria-live="polite">Start the watch as the bob crosses the centre mark moving right. Each later rightward crossing is one oscillation.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="prac-lower">
+          <div class="panel">
+            <div class="panel-head">
+              <h2 class="panel-h">Observation table</h2>
+              <div class="tbl-actions">
+                <button type="button" class="btn-quiet sm" id="t-add">Add row</button>
+                <button type="button" class="btn-quiet sm" id="t-fill">Fill T and T² for me</button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="obs small edit" id="p-table">
+                <thead><tr><th>L<span class="u">cm</span></th><th>T<sub>10</sub><span class="u">s</span></th><th>T = T<sub>10</sub> ÷ 10<span class="u">s</span></th><th>T²<span class="u">s²</span></th><th><span class="sr">Remove</span></th></tr></thead>
+                <tbody id="p-tbody"></tbody>
+              </table>
+            </div>
+            <p class="tbl-msg" id="tbl-msg" aria-live="polite"></p>
+          </div>
+
+          <div class="panel">
+            <h2 class="panel-h">T² against L</h2>
+            <div class="seg" id="s-mode" role="radiogroup" aria-label="Slope method">
+              <button type="button" role="radio" aria-checked="true" data-mode="pick">Pick two points</button>
+              <button type="button" role="radio" aria-checked="false" data-mode="line">Drag a best-fit line</button>
+            </div>
+            <div class="graph-wrap"><svg id="p-graph" class="graph" viewBox="0 0 760 540" role="img" aria-label="Your graph of T squared against L"></svg></div>
+            <p class="slope-out" id="slope-out" aria-live="polite"></p>
+          </div>
+
+          <div class="panel">
+            <h2 class="panel-h">Calculate g</h2>
+            <div class="calc-form">
+              <div class="cf"><label for="in-s">Slope S = ΔT² / ΔL <span class="u">s²/cm</span></label><input type="text" inputmode="decimal" id="in-s" autocomplete="off"></div>
+              <div class="cf"><label>4π²</label><div class="fixed">39.478</div></div>
+              <div class="cf"><label for="in-g">g = 4π² / S</label><div class="g-in"><input type="text" inputmode="decimal" id="in-g" autocomplete="off"><select id="in-gu" aria-label="Unit of g"><option value="cm">cm/s²</option><option value="m">m/s²</option></select></div></div>
+            </div>
+            <div class="calc-actions">
+              <button type="button" class="btn-main" id="btn-check">Check</button>
+              <button type="button" class="btn-quiet" id="btn-guide">Guided calculation</button>
+            </div>
+            <p class="check-msg" id="check-msg" aria-live="polite"></p>
+            <ol class="guide" id="guide" hidden></ol>
+          </div>
+        </div>
+
+        <div class="prac-foot">
+          <button type="button" class="btn-quiet" id="btn-reset">Start over</button>
+          <button type="button" class="btn-quiet" id="btn-load">Load my lab values</button>
+        </div>
+
+        <div class="extras" id="extras">
+          <div class="extras-panel" id="extras-panel" role="region" aria-label="Optional extras">
+            <a href="https://grokipedia.com/page/Pendulum_(mechanics)" target="_blank" rel="noopener">Grokipedia: Pendulum (mechanics), the simple gravity pendulum</a>
+            <a href="https://grokipedia.com/page/Simple_harmonic_motion" target="_blank" rel="noopener">Grokipedia: Simple harmonic motion</a>
+            <a href="https://www.youtube.com/watch?v=c7iLQEMYWeo" target="_blank" rel="noopener">Video: Exp. 12, The Simple Pendulum (Northeastern Introductory Physics Lab)</a>
+          </div>
+          <button type="button" class="extras-toggle" id="extras-toggle" aria-expanded="false" aria-controls="extras-panel">Optional extras</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+<script src="js/app.js"></script>
+</body>
+</html>

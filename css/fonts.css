@@ -1,0 +1,7 @@
+/* Self-hosted Google Fonts (latin subset): Instrument Serif, Hanken Grotesk, JetBrains Mono, Gochi Hand. SIL Open Font License. */
+@font-face{font-family:'Instrument Serif';font-style:normal;font-weight:400;font-display:swap;src:url(../fonts/InstrumentSerif-400.woff2) format('woff2');}
+@font-face{font-family:'Instrument Serif';font-style:italic;font-weight:400;font-display:swap;src:url(../fonts/InstrumentSerif-italic.woff2) format('woff2');}
+@font-face{font-family:'Hanken Grotesk';font-style:normal;font-weight:400 800;font-display:swap;src:url(../fonts/HankenGrotesk-var.woff2) format('woff2');}
+@font-face{font-family:'Hanken Grotesk';font-style:italic;font-weight:400;font-display:swap;src:url(../fonts/HankenGrotesk-italic.woff2) format('woff2');}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:500 700;font-display:swap;src:url(../fonts/JetBrainsMono-var.woff2) format('woff2');}
+@font-face{font-family:'Gochi Hand';font-style:normal;font-weight:400;font-display:swap;src:url(../fonts/GochiHand-400.woff2) format('woff2');}
