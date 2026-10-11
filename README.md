@@ -22,7 +22,7 @@ The simulation integrates θ'' = −(g/L) sin θ (RK4, 2 ms steps, very light da
 The stopwatch reads simulation time, so slow motion does not change readings. By hand, an oscillation is counted each time the bob crosses the centre mark moving right.
 Touching the bob or string while the timer runs stops it; a reading already frozen after 10 oscillations is left alone.
 With Auto-count 10 on, every release resets the timer, starts it, counts 10 returns to the release point and freezes the reading.
-The tutorial button runs a paced demo (20, 40, 60, 80 cm → table → graph → calculation) that can be skipped step by step or stopped.
+The tutorial button runs a paced demo (20, 40, 60, 80 cm → table → graph → calculation) that can be paused, slowed down, stepped forward or back (Previous step / Next step, or the ← → keys) and stopped.
 
 ## Files
 
