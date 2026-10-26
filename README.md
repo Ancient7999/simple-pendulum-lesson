@@ -4,7 +4,7 @@ This README is AI-generated.
 
 Static, offline-ready lesson site for the college physics practical **Simple pendulum: acceleration due to gravity from a T² against L graph**.
 
-https://sonicunligmated.github.io/simple-pendulum-lesson/
+Live site: https://Ancient7999.github.io/simple-pendulum-lesson/
 
 ## Sections
 
